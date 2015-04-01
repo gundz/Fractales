@@ -6,15 +6,15 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/01 05:21:29 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/01 06:08:45 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = project
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g
-#CFLAGS = -Wall -Wextra -Werror -Ofast
+CC = /usr/bin/gcc
+#CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -Ofast
 CFLAGS += -lmlx -framework OpenGL -framework AppKit
 
 PATH_INC = includes/

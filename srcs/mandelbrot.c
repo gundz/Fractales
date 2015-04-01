@@ -28,41 +28,21 @@ void					init_mandelbrot(t_fract *data)
 }
 
 inline static void		set_color(const int x, const int y,
-	t_fract *data, t_tab *tab)
+	t_fract *data)
 {
-	//SDL_Color			scolor;
-
 	if (data->i == data->nb_it)
 		put_pixel(data->surf, x, y, 0xFFFFFF);
 	else
 	{	
 		if (data->i % 2 == 0)
-			put_pixel(data->surf, x, y, (((data->i / data->nb_it) << 8) + 0x00FF00));
+			put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
 		else if (data->i % 10 == 0)
-			put_pixel(data->surf, x, y, (((data->i / data->nb_it) << 16) + 0xAABFCA));
+			put_pixel(data->surf, x, y, (((data->i % data->nb_it) << 16) + 0xAABFCA));
 		else
-			put_pixel(data->surf, x, y, (((data->i / data->nb_it) << 16) + 0xAAFF00));
-
-		// scolor.r = 0;
-		// scolor.g = 0;
-		// if (data->i % 2 == 0)
-		// 	scolor.g = data->i * 255 / data->nb_it;
-		// if (data->i % 3 == 0)
-		// 	scolor.r = data->i * 255 / data->nb_it;
-		// if (data->i % 5 == 0)
-		// {
-		// 	scolor.r = data->i * 255 / data->nb_it;
-		// 	scolor.g = data->i * 127 / data->nb_it;
-		// 	scolor.b = data->i * 255 / data->nb_it;
-		// }
-		// scolor.b = data->i * 255 / data->nb_it;
-		// scolor.a = 255;
-		// put_pixel(data->surf, x, y,((data->i) << 16) + sdl_color_to_int(scolor));
-
+			put_pixel(data->surf, x, y, (((data->i) << 16) + 0xAAFF00));
 	}
-	(void)tab;
 }
-#include <stdio.h>
+
 void					*mandelbrot(void *arg, const int x, const int y)
 {
 	t_thread			*thread = (t_thread *)arg;
@@ -98,6 +78,6 @@ void					*mandelbrot(void *arg, const int x, const int y)
 		z.y = (tmp * z.y + tmp * z.y) + c.y;
 		data->i++;
 	}
-	set_color(x, y, data, thread->tab);
+	set_color(x, y, data);
 	return (NULL);
 }

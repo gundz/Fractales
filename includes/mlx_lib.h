@@ -15,8 +15,8 @@
 
 # include <mlx_const.h>
 
-# define RX		1920
-# define RY		1080
+# define RX		640
+# define RY		480
 
 typedef struct	s_mlx_surf
 {

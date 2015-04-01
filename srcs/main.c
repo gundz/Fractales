@@ -24,7 +24,7 @@ void				main_mlx(t_data *data)
 
 	init_mandelbrot(&fract);
 	fract.surf = data->mlx.surf;
-	thread = get_thread(1, tab, &fract, &mandelbrot);
+	thread = get_thread(5, tab, &fract, &mandelbrot);
 	thread_it(thread);
 	mlx_show_surf(&data->mlx, data->mlx.surf);
 }
