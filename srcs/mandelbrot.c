@@ -16,14 +16,14 @@
 
 void					init_mandelbrot(t_fract *data)
 {
-	data->nb_it = 800;
+	data->nb_it = 1200;
 	data->pos.x = 0;
 	data->pos.y = 0;
 	data->m_pos.x = 0;
 	data->m_pos.y = 0;
 	data->pos_inc = 0.1;
 	data->zoom.x = 1;
-	data->zoom.y = 100;
+	data->zoom.y = 1000;
 	data->zoom_inc = 0.5;
 }
 

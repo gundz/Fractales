@@ -6,7 +6,7 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/01 06:58:50 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/01 08:06:53 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC =	main.c \
 		mlx_k_event.c \
 		mlx_m_event.c \
 		mandelbrot.c \
+		mandelbrot_input.c \
 
 LIBPATH = libft/
 LIBINC = $(LIBPATH)includes

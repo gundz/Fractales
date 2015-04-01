@@ -14,6 +14,10 @@
 # define MLX_CONST_H
 
 # define K_ESC 53
+# define K_LEFT 123
+# define K_RIGHT 124
+# define K_UP 126
+# define K_DOWN 125
 # define M_LEFT 1
 # define M_RIGHT 2
 # define M_S_UP 4

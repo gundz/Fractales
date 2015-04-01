@@ -11,11 +11,19 @@
 /* ************************************************************************** */
 
 #include <mlx_lib.h>
+#include <fractol.h>
 
-int				mlx_m_event(unsigned int button, int x, int y, t_data *param)
+int				mlx_m_event(unsigned int button, int x, int y, void *param)
 {
-	param->mlx.m_x = x;
-	param->mlx.m_y = y;
-	(void)button;
+	int			ret;
+	t_data		*data;
+
+	ret = 0;
+	data = param;
+	data->mlx.m_x = x;
+	data->mlx.m_y = y;
+	ret += mandelbrot_m_input(button, &data->fract);
+	if (ret > 0)
+		main_mlx(data);
 	return (0);
 }

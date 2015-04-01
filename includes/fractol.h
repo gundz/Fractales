@@ -13,7 +13,11 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
+# define NB_THREAD 32
+
+# include <thread.h>
 # include <mlx_lib.h>
+
 
 typedef struct		s_v2d
 {
@@ -34,7 +38,19 @@ typedef struct		s_fract
 	t_mlx_surf		*surf;
 }					t_fract;
 
+typedef struct		s_data
+{	
+	t_mlx			mlx;
+	t_fract			fract;
+	t_thread		*thread;
+	t_tab			*tab;
+}					t_data;
+
+void				main_mlx(t_data *data);
+
 void				*mandelbrot(void *arg, const int x, const int y);
 void				init_mandelbrot(t_fract *data);
+int					mandelbrot_k_input(unsigned int key, t_fract *data);
+int					mandelbrot_m_input(unsigned int button, t_fract *data);
 
 #endif
