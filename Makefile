@@ -6,13 +6,13 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/01 06:08:45 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/01 06:58:50 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = project
 
-CC = /usr/bin/gcc
+CC = ~/.brew/bin/gcc-4.9
 #CFLAGS = -Wall -Wextra -Werror -g
 CFLAGS = -Wall -Wextra -Werror -Ofast
 CFLAGS += -lmlx -framework OpenGL -framework AppKit
@@ -43,7 +43,7 @@ $(NAME): namemes $(OBJ)
 $(PATH_OBJ)/%.o: $(addprefix $(PATH_SRC)/, %.c)
 	@ echo -n .
 	@ mkdir -p $(PATH_OBJ)
-	@ $(CC) -c $^ -I $(PATH_INC) -I $(LIBINC) -o $@
+	@ $(CC) -c $^ -I $(PATH_INC) $(CFLAGS) -I $(LIBINC) -o $@
 
 lib:
 	@ make -C $(LIBPATH)
