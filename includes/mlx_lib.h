@@ -15,8 +15,10 @@
 
 # include <mlx_const.h>
 
-# define RX		1920
-# define RY		1080
+# define RX		800
+# define RY		600
+# define RX2	RX / 2
+# define RY2	RY / 2
 
 typedef struct	s_mlx_surf
 {
@@ -49,7 +51,8 @@ void			mlx_show_surf(t_mlx *mlx, t_mlx_surf *surf);
 void			put_pixel(t_mlx_surf *surf, const int x, const int y,
 		const int color);
 
-int				mlx_k_event(unsigned int key, void *param);
-int				mlx_m_event(unsigned int button, int x, int y, void *param);
+int				mlx_k_press(unsigned int key, void *param);
+int				mlx_m_button(unsigned int button, int x, int y, void *param);
+int				mlx_m_move(int x, int y, void *param);
 
 #endif

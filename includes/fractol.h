@@ -14,10 +14,12 @@
 # define FRACTOL_H
 
 # define NB_THREAD 32
+# define ZOOM 1.1
+# define RXZ RX / ZOOM
+# define RYZ RY / ZOOM
 
 # include <thread.h>
 # include <mlx_lib.h>
-
 
 typedef struct		s_v2d
 {
@@ -27,19 +29,15 @@ typedef struct		s_v2d
 
 typedef struct		s_fract
 {
-	int				i;
-	int				nb_it;
-	t_v2d			pos;
-	t_v2d			m_pos;
-	long double		pos_inc;
-	t_v2d			zoom;
-	long double		zoom_inc;
-	t_v2d			c;
 	t_mlx_surf		*surf;
+	int				i;
+	int				max_it;
+	long double		zoom;
+	t_v2d			zoomp;
 }					t_fract;
 
 typedef struct		s_data
-{	
+{
 	t_mlx			mlx;
 	t_fract			fract;
 	t_thread		*thread;
@@ -50,7 +48,7 @@ void				main_mlx(t_data *data);
 
 void				*mandelbrot(void *arg, const int x, const int y);
 void				init_mandelbrot(t_fract *data);
-int					mandelbrot_k_input(unsigned int key, t_fract *data);
-int					mandelbrot_m_input(unsigned int button, t_fract *data);
+int					mandelbrot_input(unsigned int button, unsigned int key,
+	t_data *data);
 
 #endif

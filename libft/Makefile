@@ -6,7 +6,7 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/11 02:34:50 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/01 05:01:40 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/01 23:40:32 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,8 @@ SRC =	\
 		ft_strjoin.c \
 		ft_strijoin.c \
 		ft_strsplit.c \
+		ft_itoa.c \
+		ft_strrev.c \
 		\
 		ft_ctablen.c \
 		ft_freectab.c \

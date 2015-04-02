@@ -6,7 +6,7 @@
 /*   By: fgundlac <fgundlac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2013/11/19 10:51:44 by fgundlac          #+#    #+#             */
-/*   Updated: 2014/11/11 19:06:53 by fgundlac         ###   ########.fr       */
+/*   Updated: 2015/04/01 23:40:20 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ char						*ft_strcat(char *dest, const char *const src);
 char						*ft_strjoin(char *str, char *strc);
 char						*ft_strijoin(unsigned int n, ...);
 char						**ft_strsplit(char *str, char c);
+char						*ft_itoa(int n);
+char						*ft_strrev(char *str);
 
 unsigned int				ft_ctablen(const char **const tab);
 void						ft_freectab(char **tab);

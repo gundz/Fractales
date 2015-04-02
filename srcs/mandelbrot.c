@@ -16,28 +16,23 @@
 
 void					init_mandelbrot(t_fract *data)
 {
-	data->nb_it = 1200;
-	data->pos.x = 0;
-	data->pos.y = 0;
-	data->m_pos.x = 0;
-	data->m_pos.y = 0;
-	data->pos_inc = 0.1;
-	data->zoom.x = 1;
-	data->zoom.y = 1000;
-	data->zoom_inc = 0.5;
+	data->max_it = 150;
+	data->zoomp.x = 0;
+	data->zoomp.y = 0;
+	data->zoom = 1;
 }
 
 inline static void		set_color(const int x, const int y,
 	t_fract *data)
 {
-	if (data->i == data->nb_it)
+	if (data->i == data->max_it)
 		put_pixel(data->surf, x, y, 0xFFFFFF);
 	else
 	{	
 		if (data->i % 2 == 0)
 			put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
 		else if (data->i % 10 == 0)
-			put_pixel(data->surf, x, y, (((data->i % data->nb_it) << 16) + 0xAABFCA));
+			put_pixel(data->surf, x, y, (((data->i % data->max_it) << 16) + 0xAABFCA));
 		else
 			put_pixel(data->surf, x, y, (((data->i) << 16) + 0xAAFF00));
 	}
@@ -46,36 +41,26 @@ inline static void		set_color(const int x, const int y,
 void					*mandelbrot(void *arg, const int x, const int y)
 {
 	t_thread			*thread = (t_thread *)arg;
-	t_v2d				c;
-	t_v2d				z;
-	t_v2d				z2;
-	long double			tmp;
-	t_fract				*data;
+	t_fract				*data = thread->data;
+	t_v2d				coor;
+	t_v2d				tmp;
+	t_v2d				tmp2;
 
-	data = thread->data;
-
-	double x1 = -2.1 / data->zoom.x;
-	double x2 = 0.6 / data->zoom.x;
-	double y1 = -1.2 / data->zoom.x;
-	double y2 = 1.2 / data->zoom.x;
-
-	double zx = RX / (x2 - x1);
-	double zy = RY / (y2 - y1);
-
-	c.x = (x / zx) + x1 + data->pos.x;
-	c.y = (y / zy) + y1 + data->pos.y;
-	z.x = 0;
-	z.y = 0;
-	z2.x = 0;
-	z2.y = 0;
+	coor.x = 0.0;
+	coor.y = 0.0;
+	tmp2.x = 0.0;
+	tmp2.y = 0.0;
 	data->i = 0;
-	while ((z2.x + z.y) < 100 && data->i < data->nb_it)
+	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)
 	{
-		z2.x = z.x * z.x;
-		z2.y = z.y * z.y;
-		tmp = z.x;
-		z.x = z2.x - z2.y + c.x;
-		z.y = (tmp * z.y + tmp * z.y) + c.y;
+		tmp.x = coor.x;
+		tmp.y = coor.y;
+		tmp2.x = tmp.x * tmp.x;
+		tmp2.y = tmp.y * tmp.y;
+		coor.x = tmp2.x - tmp2.y + (((x + data->zoomp.x) \
+			/ data->zoom / RX) * 4 - 2);
+		coor.y = (tmp.x * tmp.y) + (tmp.x * tmp.y) + \
+			(((y + data->zoomp.y) / data->zoom / RY) * 4 - 2);
 		data->i++;
 	}
 	set_color(x, y, data);

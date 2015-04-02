@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mlx_const.h                                        :+:      :+:    :+:   */
+/*   ft_strrev.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/04/01 02:52:23 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/04/01 02:52:24 by fgundlac         ###   ########.fr       */
+/*   Created: 2013/12/20 14:57:24 by fgundlac          #+#    #+#             */
+/*   Updated: 2015/04/01 23:37:03 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MLX_CONST_H
-# define MLX_CONST_H
+#include <libft.h>
+#include <stdlib.h>
 
-#define PointerMotionMask (1L<<6)
-#define MotionNotify 6
+char			*ft_strrev(char *str)
+{
+	char		*rev;
+	size_t		len;
+	int			i;
 
-# define K_ESC 53
-# define K_LEFT 123
-# define K_RIGHT 124
-# define K_UP 126
-# define K_DOWN 125
-# define K_KPLUS 69
-# define K_KMIN 78
-# define M_LEFT 1
-# define M_RIGHT 2
-# define M_S_UP 4
-# define M_S_DOWN 5
-
-#endif
+	i = 0;
+	len = ft_strlen(str);
+	if (!(rev = (char *)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	while (len--)
+	{
+		rev[i] = str[len];
+		i++;
+	}
+	rev[i] = '\0';
+	return (rev);
+}
