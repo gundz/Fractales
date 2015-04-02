@@ -12,23 +12,29 @@
 
 #include <fractol.h>
 
-// int						mandelbrot_move(unsigned int button, unsigned int key,
-// 	t_data *data)
-// {
-// 	int					ret;
+static void				zoom_in(t_data *data)
+{
+	data->fract.zoom *= ZOOM;
+	data->fract.zoomp.x *= ZOOM;
+	data->fract.zoomp.y *= ZOOM;
+	data->fract.zoomp.x += ((RX - RXZ) / 2) / ZOOM - \
+		(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
+	data->fract.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
+		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
+	data->fract.max_it *= 1.01;
+}
 
-// 	ret = 0;
-// 	if (key == K_LEFT)
-// 		ret += !!(data->fract.pos.x -= data->fract.pos_inc);
-// 	if (key == K_RIGHT)
-// 		ret += !!(data->fract.pos.x += data->fract.pos_inc);
-// 	if (key == K_UP)
-// 		ret += !!(data->fract.pos.y -= data->fract.pos_inc);
-// 	if (key == K_DOWN)
-// 		ret += !!(data->fract.pos.y += data->fract.pos_inc);
-// 	return (ret);
-// 	(void)button;
-// }
+static void				zoom_out(t_data *data)
+{
+	data->fract.zoom /= ZOOM;
+	data->fract.zoomp.x /= ZOOM;
+	data->fract.zoomp.y /= ZOOM;
+	data->fract.zoomp.x -= ((RX - RXZ) / 2) / ZOOM - \
+		(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
+	data->fract.zoomp.y -= ((RY - RYZ) / 2) / ZOOM - \
+		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
+	data->fract.max_it /= 1.01;
+}
 
 int						mandelbrot_zoom(unsigned int button, unsigned int key,
 	t_data *data)
@@ -38,26 +44,12 @@ int						mandelbrot_zoom(unsigned int button, unsigned int key,
 	ret = 0;
 	if (button == M_LEFT || key == K_KPLUS)
 	{
-		data->fract.zoom *= ZOOM;
-		data->fract.zoomp.x *= ZOOM;
-		data->fract.zoomp.y *= ZOOM;
-		data->fract.zoomp.x += ((RX - RXZ) / 2) / ZOOM - \
-			(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
-		data->fract.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
-			(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
-		data->fract.max_it *= 1.01;
+		zoom_in(data);
 		ret++;
 	}
 	if (button == M_RIGHT || key == K_KMIN)
 	{
-		data->fract.zoom /= ZOOM;
-		data->fract.zoomp.x /= ZOOM;
-		data->fract.zoomp.y /= ZOOM;
-		data->fract.zoomp.x -= ((RX - RXZ) / 2) / ZOOM - \
-			(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
-		data->fract.zoomp.y -= ((RY - RYZ) / 2) / ZOOM - \
-			(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
-		data->fract.max_it /= 1.01;
+		zoom_out(data);
 		ret++;
 	}
 	return (ret);
@@ -69,7 +61,6 @@ int						mandelbrot_input(unsigned int button, unsigned int key,
 	int					ret;
 
 	ret = 0;
-	//ret += mandelbrot_move(button, key, data);
 	ret += mandelbrot_zoom(button, key, data);
 	return (ret);
 }

@@ -28,11 +28,12 @@ inline static void		set_color(const int x, const int y,
 	if (data->i == data->max_it)
 		put_pixel(data->surf, x, y, 0xFFFFFF);
 	else
-	{	
+	{
 		if (data->i % 2 == 0)
 			put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
 		else if (data->i % 10 == 0)
-			put_pixel(data->surf, x, y, (((data->i % data->max_it) << 16) + 0xAABFCA));
+			put_pixel(data->surf, x, y, (((data->i % data->max_it) << 16) +
+				0xAABFCA));
 		else
 			put_pixel(data->surf, x, y, (((data->i) << 16) + 0xAAFF00));
 	}
@@ -40,16 +41,16 @@ inline static void		set_color(const int x, const int y,
 
 void					*mandelbrot(void *arg, const int x, const int y)
 {
-	t_thread			*thread = (t_thread *)arg;
-	t_fract				*data = thread->data;
+	t_thread			*thread;
+	t_fract				*data;
 	t_v2d				coor;
 	t_v2d				tmp;
 	t_v2d				tmp2;
 
-	coor.x = 0.0;
-	coor.y = 0.0;
-	tmp2.x = 0.0;
-	tmp2.y = 0.0;
+	thread = (t_thread *)arg;
+	data = thread->data;
+	set_v2d(0.0, 0.0, &coor);
+	set_v2d(0.0, 0.0, &tmp2);
 	data->i = 0;
 	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)
 	{

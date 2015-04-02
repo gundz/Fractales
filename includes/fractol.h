@@ -51,4 +51,6 @@ void				init_mandelbrot(t_fract *data);
 int					mandelbrot_input(unsigned int button, unsigned int key,
 	t_data *data);
 
+void				set_v2d(long double x, long double y, t_v2d *v);
+
 #endif

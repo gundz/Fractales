@@ -28,6 +28,7 @@ SRC =	main.c \
 		mlx_m_event.c \
 		mandelbrot.c \
 		mandelbrot_input.c \
+		tools.c \
 
 LIBPATH = libft/
 LIBINC = $(LIBPATH)includes
