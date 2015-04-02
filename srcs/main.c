@@ -16,12 +16,13 @@
 #include <fractol.h>
 #include <mlx.h>
 
-void				main_mlx(t_data *data)
+int					main_mlx(t_data *data)
 {
 	thread_it(data->thread);
 	mlx_show_surf(&data->mlx, data->mlx.surf);
 	mlx_string_put(data->mlx.mlx, data->mlx.win, 0, 0, 0xFF0000,
 		ft_itoa(data->fract.max_it));
+	return (0);
 }
 
 void				init_data(t_data *data)
@@ -40,6 +41,7 @@ int					main(void)
 		ft_putstr_fd("Error while initializing MLX", 2);
 	init_data(&data);
 	main_mlx(&data);
+	mlx_expose_hook(data.mlx.win, &main_mlx, &data);
 	mlx_hook(data.mlx.win, MOTION, MOTION_MASK, &mlx_m_move, &data);
 	mlx_key_hook(data.mlx.win, &mlx_k_press, &data);
 	mlx_mouse_hook(data.mlx.win, &mlx_m_button, &data);

@@ -12,7 +12,7 @@
 
 #include <fractol.h>
 
-static void				zoom_in(t_data *data)
+static int				zoom_in(t_data *data)
 {
 	data->fract.zoom *= ZOOM;
 	data->fract.zoomp.x *= ZOOM;
@@ -22,9 +22,10 @@ static void				zoom_in(t_data *data)
 	data->fract.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
 		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
 	data->fract.max_it *= 1.01;
+	return (1);
 }
 
-static void				zoom_out(t_data *data)
+static int				zoom_out(t_data *data)
 {
 	data->fract.zoom /= ZOOM;
 	data->fract.zoomp.x /= ZOOM;
@@ -34,25 +35,7 @@ static void				zoom_out(t_data *data)
 	data->fract.zoomp.y -= ((RY - RYZ) / 2) / ZOOM - \
 		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
 	data->fract.max_it /= 1.01;
-}
-
-int						mandelbrot_zoom(unsigned int button, unsigned int key,
-	t_data *data)
-{
-	int					ret;
-
-	ret = 0;
-	if (button == M_LEFT || key == K_KPLUS)
-	{
-		zoom_in(data);
-		ret++;
-	}
-	if (button == M_RIGHT || key == K_KMIN)
-	{
-		zoom_out(data);
-		ret++;
-	}
-	return (ret);
+	return (1);
 }
 
 int						mandelbrot_input(unsigned int button, unsigned int key,
@@ -61,6 +44,9 @@ int						mandelbrot_input(unsigned int button, unsigned int key,
 	int					ret;
 
 	ret = 0;
-	ret += mandelbrot_zoom(button, key, data);
+	if (button == M_LEFT || key == M_S_UP)
+		ret += zoom_in(data);
+	if (button == M_RIGHT || key == M_S_DOWN)
+		ret += zoom_out(data);
 	return (ret);
 }

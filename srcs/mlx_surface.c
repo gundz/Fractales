@@ -37,6 +37,8 @@ t_mlx_surf		*mlx_create_rgb_surface(void *const mlx,
 
 	if (!(surf = (t_mlx_surf *)malloc(sizeof(t_mlx_surf))))
 		return (NULL);
+	surf->x = x;
+	surf->y = y;
 	surf->img = mlx_new_image(mlx, x, y);
 	surf->pixels =
 		mlx_get_data_addr(surf->img, &surf->bpp, &surf->pitch, &surf->endian);

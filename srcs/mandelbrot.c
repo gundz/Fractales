@@ -52,7 +52,7 @@ void					*mandelbrot(void *arg, const int x, const int y)
 	set_v2d(0.0, 0.0, &coor);
 	set_v2d(0.0, 0.0, &tmp2);
 	data->i = 0;
-	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)
+	while ((tmp2.x + tmp2.y) < 100 && data->i < data->max_it)
 	{
 		tmp.x = coor.x;
 		tmp.y = coor.y;

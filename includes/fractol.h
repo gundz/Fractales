@@ -44,7 +44,7 @@ typedef struct		s_data
 	t_tab			*tab;
 }					t_data;
 
-void				main_mlx(t_data *data);
+int					main_mlx(t_data *data);
 
 void				*mandelbrot(void *arg, const int x, const int y);
 void				init_mandelbrot(t_fract *data);
