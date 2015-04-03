@@ -10,15 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <libft.h>
 #include <mlx_lib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <math.h>
-
-static void		ft_putchar_fd(const char c, const int fd)
-{
-	write(fd, &c, 1);
-}
 
 static int		save_file(const char *const name)
 {
@@ -56,28 +52,13 @@ static void		write_data(const int fd, unsigned int *img,
 	const unsigned int w, const unsigned int h)
 {
 	unsigned int	i;
-	float			big;
-	float			small;
-	float			ramp;
 
-	big = 0;
-	i = 0;
-	while (i < w)
-		big = MAX(big, img[i++]);
-	small = big;
-	i = 0;
-	while (i < h)
-		small = MIN(small, img[i++]);
 	i = 0;
 	while (i < w * h)
 	{
-		ramp = 2 * (img[i] - small) / (big - small);
-		if (ramp > 1)
-			ramp = 1;
-		ramp = pow(ramp, 0.5);
-		ft_putchar_fd((int)(ramp * 255), fd);
-		ft_putchar_fd((int)(ramp * 255), fd);
-		ft_putchar_fd((int)(ramp * 255), fd);
+		ft_putchar_fd((char)((img[i]) & 0xFF), fd);
+		ft_putchar_fd((char)((img[i] >> 8) & 0xFF), fd);
+		ft_putchar_fd((char)((img[i] >> 16) & 0xFF), fd);
 		i++;
 	}
 }

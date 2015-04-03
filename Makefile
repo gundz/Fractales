@@ -6,13 +6,14 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/03 15:53:46 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/03 19:15:30 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = project
 
 CC = ~/.brew/bin/gcc-4.9
+#CC = gcc
 #CFLAGS = -Wall -Wextra -Werror -g
 CFLAGS = -Wall -Wextra -Werror -Ofast
 CFLAGS += -lmlx -framework OpenGL -framework AppKit

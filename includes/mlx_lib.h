@@ -15,8 +15,8 @@
 
 # include <mlx_const.h>
 
-# define RX		800
-# define RY		600
+# define RX		640
+# define RY		480
 # define RX2	RX / 2
 # define RY2	RY / 2
 

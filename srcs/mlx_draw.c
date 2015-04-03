@@ -21,9 +21,9 @@ void				put_pixel(t_mlx_surf *surf,
 	res = (x * (surf->bpp / sizeof(char *)) + (y * surf->pitch));
 	if ((x <= RX && y <= RY && x > 0 && y > 0) && res >= 0)
 	{
-		surf->pixels[res] = color;
-		surf->pixels[res + 1] = (color >> 8);
-		surf->pixels[res + 2] = (color >> 16);
+		surf->pixels[res] = color & 0xFF;
+		surf->pixels[res + 1] = (color >> 8) & 0xFF;
+		surf->pixels[res + 2] = (color >> 16) & 0xFF;
 	}
 }
 
@@ -31,17 +31,11 @@ unsigned int		get_color(t_mlx_surf *surf, const int x, const int y)
 {
 	int				res;
 	unsigned int	ret;
-	unsigned int	r;
-	unsigned int	g;
-	unsigned int	b;
 
 	ret = 0;
 	res = (x * (surf->bpp / sizeof(char *)) + (y * surf->pitch));
-	r = (surf->pixels[res] >> 16) & 0xFF;
-	g = (surf->pixels[res] >> 8) & 0xFF;
-	b = (surf->pixels[res]) & 0xFF;
-	ret = (ret << 8) + r;
-	ret = (ret << 8) + g;
-	ret = (ret << 8) + b;
+	ret |= (surf->pixels[res]) & 0x0000FF;
+	ret |= (surf->pixels[res + 1] << 8) & 0x00FF00;
+	ret |= (surf->pixels[res + 2] << 16) & 0xFF0000;
 	return (ret);
 }

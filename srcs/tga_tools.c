@@ -19,8 +19,8 @@ unsigned int					*surf_to_int(t_mlx_surf *surf)
 	unsigned int				j;
 	unsigned int				*ret;
 
-	if (!(ret = (unsigned int *)malloc((sizeof(unsigned int) *
-		surf->x) * surf->y)))
+	if (!(ret = (unsigned int *)malloc(sizeof(unsigned int) *
+		surf->x * surf->y)))
 		return (NULL);
 	i = 0;
 	while (i < surf->y)
