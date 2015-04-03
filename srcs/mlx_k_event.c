@@ -46,6 +46,15 @@ static void			take_screen(t_data *data)
 	free(tmp);
 }
 
+int					change_fract(t_data *data)
+{
+	data->fract_i += 1;
+	if (data->fract_i >= NB_FRACT)
+		data->fract_i = 0;
+	data->fract = &data->fracts[data->fract_i];
+	return (1);
+}
+
 int					mlx_k_press(unsigned int key, void *param)
 {
 	int				ret;
@@ -56,7 +65,7 @@ int					mlx_k_press(unsigned int key, void *param)
 	if (key == K_ESC)
 		quit(data);
 	if (key == K_V)
-		change_fract(data);
+		ret += change_fract(data);
 	if (key == K_P)
 		take_screen(data);
 	ret += data->fract->input(-1, key, data);

@@ -36,6 +36,11 @@ void				init_data(t_data *data)
 		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
 	data->fracts[0].fract = &mandelbrot;
 	data->fracts[0].input = &mandelbrot_input;
+	init_mandelbrot(&data->fracts[1].data);
+	data->fracts[1].data.surf =
+		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
+	data->fracts[1].fract = &julia;
+	data->fracts[1].input = &julia_input;
 }
 
 int					main(void)

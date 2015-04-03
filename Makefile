@@ -27,8 +27,9 @@ SRC =	main.c \
 		mlx_draw.c \
 		mlx_k_event.c \
 		mlx_m_event.c \
-		fractals_tools.c \
 		mandelbrot.c \
+		julia.c \
+		julia_input.c \
 		mandelbrot_input.c \
 		tga_tools.c \
 		tga.c \

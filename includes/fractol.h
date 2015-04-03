@@ -17,7 +17,7 @@
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
-# define NB_FRACT 1
+# define NB_FRACT 2
 
 # include <thread.h>
 # include <mlx_lib.h>
@@ -62,8 +62,13 @@ void				init_mandelbrot(t_fract *data);
 int					mandelbrot_input(unsigned int button, unsigned int key,
 	t_data *data);
 
+void				*julia(void *arg, const int x, const int y);
+void				init_julia(t_fract *data);
+int					julia_input(unsigned int button, unsigned int key,
+	t_data *data);
+
 void				set_v2d(long double x, long double y, t_v2d *v);
 
-void				change_fract(t_data *data);
+int					change_fract(t_data *data);
 
 #endif
