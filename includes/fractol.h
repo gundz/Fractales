@@ -13,7 +13,7 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-# define NB_THREAD 4
+# define NB_THREAD 32
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
@@ -49,7 +49,7 @@ typedef struct		s_data
 {
 	t_fracts		*fract;
 	t_fracts		fracts[NB_FRACT];
-
+	int				fract_i;
 	t_mlx			mlx;
 	t_thread		*thread;
 	t_tab			*tab;
@@ -63,5 +63,7 @@ int					mandelbrot_input(unsigned int button, unsigned int key,
 	t_data *data);
 
 void				set_v2d(long double x, long double y, t_v2d *v);
+
+void				change_fract(t_data *data);
 
 #endif

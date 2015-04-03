@@ -18,10 +18,6 @@
 
 int					main_mlx(t_data *data)
 {
-	int				i;
-
-	i = 0;
-	data->fract = &data->fracts[i];
 	data->thread->f = data->fract->fract;
 	data->thread->data = &data->fract->data;
 	thread_it(data->thread);
@@ -31,6 +27,8 @@ int					main_mlx(t_data *data)
 
 void				init_data(t_data *data)
 {
+	data->fract_i = -1;
+	change_fract(data);
 	data->tab = get_t_tab(RX, RY, 0);
 	data->thread = get_thread(NB_THREAD, data->tab, NULL, NULL);
 	init_mandelbrot(&data->fracts[0].data);

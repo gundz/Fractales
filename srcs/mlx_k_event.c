@@ -55,6 +55,8 @@ int					mlx_k_press(unsigned int key, void *param)
 	data = param;
 	if (key == K_ESC)
 		quit(data);
+	if (key == K_V)
+		change_fract(data);
 	if (key == K_P)
 		take_screen(data);
 	ret += data->fract->input(-1, key, data);
