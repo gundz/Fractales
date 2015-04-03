@@ -18,19 +18,26 @@
 
 int					main_mlx(t_data *data)
 {
+	int				i;
+
+	i = 0;
+	data->fract = &data->fracts[i];
+	data->thread->f = data->fract->fract;
+	data->thread->data = &data->fract->data;
 	thread_it(data->thread);
-	mlx_show_surf(&data->mlx, data->mlx.surf);
-	mlx_string_put(data->mlx.mlx, data->mlx.win, 0, 0, 0xFF0000,
-		ft_itoa(data->fract.max_it));
+	mlx_show_surf(&data->mlx, data->fract->data.surf);
 	return (0);
 }
 
 void				init_data(t_data *data)
 {
-	init_mandelbrot(&data->fract);
-	data->fract.surf = data->mlx.surf;
 	data->tab = get_t_tab(RX, RY, 0);
-	data->thread = get_thread(NB_THREAD, data->tab, &data->fract, &mandelbrot);
+	data->thread = get_thread(NB_THREAD, data->tab, NULL, NULL);
+	init_mandelbrot(&data->fracts[0].data);
+	data->fracts[0].data.surf =
+		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
+	data->fracts[0].fract = &mandelbrot;
+	data->fracts[0].input = &mandelbrot_input;
 }
 
 int					main(void)

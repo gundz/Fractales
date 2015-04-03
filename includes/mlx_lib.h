@@ -33,7 +33,6 @@ typedef struct		s_mlx_surf
 
 typedef struct		s_mlx
 {
-	t_mlx_surf		*surf;
 	void			*mlx;
 	void			*win;
 	int				m_x;

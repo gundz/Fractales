@@ -14,27 +14,27 @@
 
 static int				zoom_in(t_data *data)
 {
-	data->fract.zoom *= ZOOM;
-	data->fract.zoomp.x *= ZOOM;
-	data->fract.zoomp.y *= ZOOM;
-	data->fract.zoomp.x += ((RX - RXZ) / 2) / ZOOM - \
+	data->fract->data.zoom *= ZOOM;
+	data->fract->data.zoomp.x *= ZOOM;
+	data->fract->data.zoomp.y *= ZOOM;
+	data->fract->data.zoomp.x += ((RX - RXZ) / 2) / ZOOM - \
 		(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
-	data->fract.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
+	data->fract->data.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
 		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
-	data->fract.max_it *= 1.01;
+	data->fract->data.max_it *= 1.01;
 	return (1);
 }
 
 static int				zoom_out(t_data *data)
 {
-	data->fract.zoom /= ZOOM;
-	data->fract.zoomp.x /= ZOOM;
-	data->fract.zoomp.y /= ZOOM;
-	data->fract.zoomp.x -= ((RX - RXZ) / 2) / ZOOM - \
+	data->fract->data.zoom /= ZOOM;
+	data->fract->data.zoomp.x /= ZOOM;
+	data->fract->data.zoomp.y /= ZOOM;
+	data->fract->data.zoomp.x -= ((RX - RXZ) / 2) / ZOOM - \
 		(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
-	data->fract.zoomp.y -= ((RY - RYZ) / 2) / ZOOM - \
+	data->fract->data.zoomp.y -= ((RY - RYZ) / 2) / ZOOM - \
 		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
-	data->fract.max_it /= 1.01;
+	data->fract->data.max_it /= 1.01;
 	return (1);
 }
 

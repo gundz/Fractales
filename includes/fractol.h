@@ -13,10 +13,11 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-# define NB_THREAD 32
+# define NB_THREAD 4
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
+# define NB_FRACT 1
 
 # include <thread.h>
 # include <mlx_lib.h>
@@ -36,10 +37,20 @@ typedef struct		s_fract
 	t_v2d			zoomp;
 }					t_fract;
 
+typedef struct		s_fracts
+{
+	t_fract			data;
+	void			(*init)(t_fract *data);
+	void			*(*fract)(void *arg, const int x, const int);
+	int				(*input)();
+}					t_fracts;
+
 typedef struct		s_data
 {
+	t_fracts		*fract;
+	t_fracts		fracts[NB_FRACT];
+
 	t_mlx			mlx;
-	t_fract			fract;
 	t_thread		*thread;
 	t_tab			*tab;
 }					t_data;

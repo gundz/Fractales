@@ -6,12 +6,12 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2013/12/11 02:34:50 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/01 23:40:32 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/03 15:51:14 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = clang
-CFLAGS = -Wall -Werror -Wextra -Ofast
+CFLAGS = -Wall -Werror -Wextra
 NAME = libft.a
 PATH_INC = includes
 PATH_OBJ = obj

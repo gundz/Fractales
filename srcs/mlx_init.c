@@ -28,6 +28,5 @@ unsigned int	mlx_l_init(t_mlx *mlx, char *title, const int x, const int y)
 		if (!(mlx->win = mlx_new_window(mlx->mlx, RX, RY, title)))
 			return (-1);
 	}
-	mlx->surf = mlx_create_rgb_surface(mlx->mlx, RX, RY, 0x000000);
 	return (0);
 }
