@@ -17,6 +17,7 @@
 # define MOTION 6
 
 # define K_ESC 53
+# define K_P 35
 # define K_LEFT 123
 # define K_RIGHT 124
 # define K_UP 126

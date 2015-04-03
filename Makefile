@@ -24,10 +24,13 @@ PATH_SRC = srcs
 SRC =	main.c \
 		mlx_init.c \
 		mlx_surface.c \
+		mlx_draw.c \
 		mlx_k_event.c \
 		mlx_m_event.c \
 		mandelbrot.c \
 		mandelbrot_input.c \
+		tga_tools.c \
+		tga.c \
 		tools.c \
 
 LIBPATH = libft/

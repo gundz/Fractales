@@ -14,20 +14,6 @@
 #include <stdlib.h>
 #include <mlx.h>
 
-void			put_pixel(t_mlx_surf *surf,
-		const int x, const int y, const int color)
-{
-	int			res;
-
-	res = (x * (surf->bpp / 8) + (y * surf->pitch));
-	if ((x <= RX && y <= RY && x > 0 && y > 0) && res >= 0)
-	{
-		surf->pixels[res] = color;
-		surf->pixels[res + 1] = (color >> 8);
-		surf->pixels[res + 2] = (color >> 16);
-	}
-}
-
 t_mlx_surf		*mlx_create_rgb_surface(void *const mlx,
 	const int x, const int y, const int color)
 {
