@@ -14,14 +14,8 @@
 
 static int				zoom_in(t_data *data)
 {
-	data->fract->data.zoom *= ZOOM;
-	data->fract->data.zoomp.x *= ZOOM;
-	data->fract->data.zoomp.y *= ZOOM;
-	data->fract->data.zoomp.x += ((RX - RXZ) / 2) / ZOOM - \
-		(data->mlx.m_x - RX2) * ZOOM + (data->mlx.m_x - RX2);
-	data->fract->data.zoomp.y += ((RY - RYZ) / 2) / ZOOM - \
-		(data->mlx.m_y - RY2) * ZOOM + (data->mlx.m_y - RY2);
-	data->fract->data.max_it *= 1.01;
+	data->fract->data.zoom += ZOOM;
+	data->fract->data.max_it *= 1.1;
 	return (1);
 }
 
@@ -43,10 +37,12 @@ int						julia_input(unsigned int button, unsigned int key,
 {
 	int					ret;
 
-	ret = 0;
+	ret = 1;
 	if (button == M_LEFT || key == M_S_UP)
 		ret += zoom_in(data);
 	if (button == M_RIGHT || key == M_S_DOWN)
 		ret += zoom_out(data);
+	data->fract->data.coor.x = data->mlx.m_x * 0.0007;
+	data->fract->data.coor.y = data->mlx.m_y * 0.0007;
 	return (ret);
 }

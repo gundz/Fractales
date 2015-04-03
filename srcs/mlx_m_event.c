@@ -30,10 +30,16 @@ int				mlx_m_button(unsigned int button, int x, int y, void *param)
 
 int				mlx_m_move(int x, int y, void *param)
 {
+	int			ret;
 	t_data		*data;
 
+	ret = 0;
 	data = param;
 	data->mlx.m_x = x;
 	data->mlx.m_y = y;
+	if (data->fract_i == 1)
+		ret += julia_input(-1, -1, data);
+	if (ret > 0)
+		main_mlx(data);
 	return (0);
 }

@@ -19,7 +19,9 @@ void					init_julia(t_fract *data)
 	data->max_it = 150;
 	data->zoomp.x = 0;
 	data->zoomp.y = 0;
-	data->zoom = 1;
+	data->zoom = 100;
+	data->coor.x = 0.285;
+	data->coor.y = 0.01;
 }
 
 inline static void		set_color(const int x, const int y,
@@ -43,7 +45,7 @@ void					*julia(void *arg, const int x, const int y)
 
 	thread = (t_thread *)arg;
 	data = thread->data;
-	set_v2d(0.0, 0.0, &coor);
+	set_v2d(((x - RX2) / data->zoom), ((y - RY2) / data->zoom), &coor);
 	set_v2d(0.0, 0.0, &tmp2);
 	data->i = 0;
 	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)
@@ -52,10 +54,8 @@ void					*julia(void *arg, const int x, const int y)
 		tmp.y = coor.y;
 		tmp2.x = tmp.x * tmp.x;
 		tmp2.y = tmp.y * tmp.y;
-		coor.x = tmp2.x - tmp2.y + (((x + data->zoomp.x) \
-			/ data->zoom / RX) * 4 - 2);
-		coor.y = (tmp.x * tmp.y) + (tmp.x * tmp.y) + \
-			(((y + data->zoomp.y) / data->zoom / RY) * 4 - 2);
+		coor.x = tmp2.x - tmp2.y + data->coor.x;
+		coor.y = (tmp.x * coor.y + tmp.x * coor.y) + data->coor.y;
 		data->i++;
 	}
 	set_color(x, y, data);

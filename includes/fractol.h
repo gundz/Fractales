@@ -13,7 +13,7 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-# define NB_THREAD 32
+# define NB_THREAD 5
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
@@ -35,6 +35,7 @@ typedef struct		s_fract
 	int				max_it;
 	long double		zoom;
 	t_v2d			zoomp;
+	t_v2d			coor;
 }					t_fract;
 
 typedef struct		s_fracts
