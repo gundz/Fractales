@@ -22,6 +22,7 @@ static void			quit(t_data *data)
 	int				i;
 
 	i = 0;
+	free_thread(data->thread);
 	while (i < NB_FRACT)
 		mlx_free_surface(data->mlx.mlx, data->fracts[i++].data.surf);
 	mlx_destroy_window(data->mlx.mlx, data->mlx.win);

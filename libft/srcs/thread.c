@@ -6,7 +6,7 @@
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/16 17:04:58 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/03/16 17:30:18 by fgundlac         ###   ########.fr       */
+/*   Updated: 2015/04/03 16:08:19 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,11 @@ t_thread			*get_thread(const int nb_thread, t_tab *const tab,
 	return (ret);
 }
 
+void				free_thread(t_thread *thread)
+{
+	free(thread);
+}
+
 void				thread_it(t_thread *thread)
 {
 	pthread_t		threads[thread->nb_thread];
@@ -73,43 +78,4 @@ void				thread_it(t_thread *thread)
 			return ;
 		i++;
 	}
-}
-
-t_tab				*get_t_tab(const int x, const int y, const int init)
-{
-	t_tab			*tab;
-	int				i;
-	int				j;
-
-	if (!(tab = (t_tab *)malloc(sizeof(t_tab))))
-		return (NULL);
-	if (!(tab->tab = (int **)malloc(sizeof(int *) * y)))
-		return (NULL);
-	i = 0;
-	while (i < y)
-	{
-		if (!(tab->tab[i] = (int *)malloc(sizeof(int) * x)))
-			return (NULL);
-		j = 0;
-		while (j < x)
-			tab->tab[i][j++] = init;
-		i++;
-	}
-	tab->size_x = x;
-	tab->size_y = y;
-	return (tab);
-}
-
-void				free_t_tab(t_tab *tab)
-{
-	int				i;
-
-	i = 0;
-	while (i < tab->size_y)
-	{
-		free(tab->tab[i]);
-		i++;
-	}
-	free(tab->tab);
-	free(tab);
 }

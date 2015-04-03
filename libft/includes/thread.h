@@ -6,7 +6,7 @@
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/16 17:05:18 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/03/16 17:12:02 by fgundlac         ###   ########.fr       */
+/*   Updated: 2015/04/03 16:07:33 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct		s_thread
 void				thread_it(t_thread *thread);
 t_thread			*get_thread(const int nb_thread, t_tab *const tab,
 		void *const data, void *(*f)(void *, int, int));
+void				free_thread(t_thread *thread);
 
 t_tab				*get_t_tab(const int x, const int y, const int init);
 void				free_t_tab(t_tab *tab);
