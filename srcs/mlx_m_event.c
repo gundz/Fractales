@@ -22,7 +22,7 @@ int				mlx_m_button(unsigned int button, int x, int y, void *param)
 	data = param;
 	data->mlx.m_x = x;
 	data->mlx.m_y = y;
-	ret += mandelbrot_input(button, -1, data);
+	ret += data->fract->input(button, -1, data);
 	if (ret > 0)
 		main_mlx(data);
 	return (0);

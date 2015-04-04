@@ -19,7 +19,7 @@
 # define RYZ RY / ZOOM
 # define NB_FRACT 3
 
-# define NM_COLOR 4 * 256
+# define NM_COLOR 4  * 256
 
 # include <thread.h>
 # include <mlx_lib.h>
@@ -38,6 +38,8 @@ typedef struct		s_fract
 	long double		zoom;
 	t_v2d			zoomp;
 	t_v2d			coor;
+	t_v2d			pos;
+	double			pos_inc;
 	int				c_map[NM_COLOR];
 }					t_fract;
 

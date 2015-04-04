@@ -27,9 +27,9 @@ void					init_mandelbrot(t_fract *data)
 	while (i < 256)
 	{
 		data->c_map[i] = rgb_to_uint(i, i, i);
-		data->c_map[i + 255] = rgb_to_uint(i, i, 255 - i);
-		data->c_map[i + 255] = rgb_to_uint(i, i, 0);
-		data->c_map[i + 255] = rgb_to_uint(0, 127 - i, 0);
+		data->c_map[i + 1 * 256] = rgb_to_uint(0, 127, 255 - i);
+		data->c_map[i + 2 * 256] = rgb_to_uint(i, i, 0);
+		data->c_map[i + 3 * 256] = rgb_to_uint(0, 127 - i, 0);
 		i++;
 	}
 }

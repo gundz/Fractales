@@ -17,12 +17,26 @@
 
 void					init_julia(t_fract *data)
 {
+	int					i;
+
 	data->max_it = 150;
 	data->zoomp.x = 0;
 	data->zoomp.y = 0;
 	data->zoom = 100;
 	data->coor.x = 0.285;
 	data->coor.y = 0.01;
+	data->pos.x = 0;
+	data->pos.y = 0;
+	data->pos_inc = 0.1;
+	i = 0;
+	while (i < 256)
+	{
+		data->c_map[i] = rgb_to_uint(i, i, 255);
+		data->c_map[i + 1 * 256] = rgb_to_uint(i, i, 255 - i);
+		data->c_map[i + 2 * 256] = rgb_to_uint(i, i, 0);
+		data->c_map[i + 3 * 256] = rgb_to_uint(0, 127 - i, 0);
+		i++;
+	}
 }
 
 inline static void		set_color(const int x, const int y,
@@ -50,7 +64,9 @@ void					*julia(void *arg, const int x, const int y)
 
 	thread = (t_thread *)arg;
 	data = thread->data;
-	set_v2d(((x - RX2) / data->zoom), ((y - RY2) / data->zoom), &coor);
+	set_v2d(
+		((x - RX2) / data->zoom) + data->pos.x,
+		((y - RY2) / data->zoom) + data->pos.y, &coor);
 	set_v2d(0.0, 0.0, &tmp2);
 	data->i = 0;
 	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)

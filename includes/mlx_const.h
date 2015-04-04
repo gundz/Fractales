@@ -13,7 +13,7 @@
 #ifndef MLX_CONST_H
 # define MLX_CONST_H
 
-# define MOTION_MASK (1L<<6)
+# define MOTION_MASK (1L << 6)
 # define MOTION 6
 
 # define K_ESC 53
