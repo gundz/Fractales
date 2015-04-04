@@ -27,7 +27,8 @@ void				put_pixel(t_mlx_surf *surf,
 	}
 }
 
-unsigned int		get_color(t_mlx_surf *surf, const int x, const int y)
+unsigned int		get_color_from_surf(t_mlx_surf *surf,
+	const int x, const int y)
 {
 	int				res;
 	unsigned int	ret;
@@ -37,5 +38,16 @@ unsigned int		get_color(t_mlx_surf *surf, const int x, const int y)
 	ret |= (surf->pixels[res]) & 0x0000FF;
 	ret |= (surf->pixels[res + 1] << 8) & 0x00FF00;
 	ret |= (surf->pixels[res + 2] << 16) & 0xFF0000;
+	return (ret);
+}
+
+unsigned int		rgb_to_uint(const int r, const int g, const int b)
+{
+	unsigned int	ret;
+
+	ret = 0;
+	ret |= (b) & 0x0000FF;
+	ret |= (g << 8) & 0x00FF00;
+	ret |= (r << 16) & 0xFF0000;
 	return (ret);
 }

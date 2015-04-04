@@ -50,8 +50,9 @@ void				mlx_show_surf(t_mlx *mlx, t_mlx_surf *surf);
 
 void				put_pixel(t_mlx_surf *surf,
 	const int x, const int y, const int color);
-unsigned int		get_color(t_mlx_surf *surf,
+unsigned int		get_color_from_surf(t_mlx_surf *surf,
 	const int x, const int y);
+unsigned int		rgb_to_uint(const int r, const int g, const int b);
 
 int					mlx_k_press(unsigned int key, void *param);
 int					mlx_m_button(unsigned int button,
@@ -60,6 +61,7 @@ int					mlx_m_move(int x, int y, void *param);
 
 # define MAX(x,y) (x > y ? x : y)
 # define MIN(x,y) (x < y ? x : y)
+# define ABS(x) ((x) < 0 ? - (x) : (x))
 
 unsigned int		*surf_to_int(t_mlx_surf *surf);
 int					write_tga(char *name, unsigned int *img,

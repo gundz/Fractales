@@ -28,7 +28,7 @@ unsigned int					*surf_to_int(t_mlx_surf *surf)
 		j = 0;
 		while (j < surf->x)
 		{
-			ret[(surf->x * i) + j] = get_color(surf, j, i);
+			ret[(surf->x * i) + j] = get_color_from_surf(surf, j, i);
 			j++;
 		}
 		i++;

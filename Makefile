@@ -6,11 +6,11 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/03 20:16:37 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/04 11:58:24 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = project
+NAME = fractol
 
 CC = ~/.brew/bin/gcc-4.9
 #CFLAGS = -Wall -Wextra -Werror -g

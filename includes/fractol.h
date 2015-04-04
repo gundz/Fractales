@@ -13,11 +13,13 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-# define NB_THREAD 16
+# define NB_THREAD 1
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
 # define NB_FRACT 2
+
+# define NM_COLOR 4 * 256
 
 # include <thread.h>
 # include <mlx_lib.h>
@@ -36,6 +38,7 @@ typedef struct		s_fract
 	long double		zoom;
 	t_v2d			zoomp;
 	t_v2d			coor;
+	int				c_map[NM_COLOR];
 }					t_fract;
 
 typedef struct		s_fracts
