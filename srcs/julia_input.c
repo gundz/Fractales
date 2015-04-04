@@ -71,12 +71,13 @@ int						julia_input(unsigned int button, unsigned int key,
 	int					ret;
 
 	ret = 1;
-	if (button == M_LEFT || key == M_S_UP)
+	if (button == M_LEFT || button == M_S_UP)
 		ret += zoom_in(data);
-	if (button == M_RIGHT || key == M_S_DOWN)
+	if (button == M_RIGHT || button == M_S_DOWN)
 		ret += zoom_out(data);
 	ret += move(key, data);
 	data->fract->data.coor.x = data->mlx.m_x * 0.0007;
 	data->fract->data.coor.y = data->mlx.m_y * 0.0007;
+	(void)button;
 	return (ret);
 }

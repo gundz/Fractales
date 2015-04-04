@@ -44,9 +44,10 @@ int						sierpinski_input(unsigned int button, unsigned int key,
 	int					ret;
 
 	ret = 0;
-	if (button == M_LEFT || key == M_S_UP)
+	if (button == M_LEFT || button == M_S_UP)
 		ret += zoom_in(data);
-	if (button == M_RIGHT || key == M_S_DOWN)
+	if (button == M_RIGHT || button == M_S_DOWN)
 		ret += zoom_out(data);
+	(void)key;
 	return (ret);
 }
