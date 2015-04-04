@@ -16,9 +16,9 @@
 #include <fcntl.h>
 #include <math.h>
 
-static int		save_file(const char *const name)
+static int			save_file(const char *const name)
 {
-	int			fd;
+	int				fd;
 
 	if ((fd = open(name,
 		O_WRONLY | O_CREAT, S_IRUSR | S_IRGRP | S_IROTH)) == -1)
@@ -26,7 +26,7 @@ static int		save_file(const char *const name)
 	return (fd);
 }
 
-static void		write_tga_header(const int fd, const int w, const int h)
+static void			write_tga_header(const int fd, const int w, const int h)
 {
 	ft_putchar_fd(0, fd);
 	ft_putchar_fd(0, fd);
@@ -48,25 +48,31 @@ static void		write_tga_header(const int fd, const int w, const int h)
 	ft_putchar_fd(0x00, fd);
 }
 
-static void		write_data(const int fd, unsigned int *img,
+static void			write_data(const int fd, unsigned int *img,
 	const unsigned int w, const unsigned int h)
 {
-	unsigned int	i;
+	int				i;
+	unsigned int	j;
 
-	i = 0;
-	while (i < w * h)
+	i = h - 1;
+	while (i >= 0)
 	{
-		ft_putchar_fd((char)((img[i]) & 0xFF), fd);
-		ft_putchar_fd((char)((img[i] >> 8) & 0xFF), fd);
-		ft_putchar_fd((char)((img[i] >> 16) & 0xFF), fd);
-		i++;
+		j = 0;
+		while (j < w)
+		{
+			ft_putchar_fd((char)((img[(i * w) + j]) & 0xFF), fd);
+			ft_putchar_fd((char)((img[(i * w) + j] >> 8) & 0xFF), fd);
+			ft_putchar_fd((char)((img[(i * w) + j] >> 16) & 0xFF), fd);
+			j++;
+		}
+		i--;
 	}
 }
 
-int				write_tga(char *name, unsigned int *img,
+int					write_tga(char *name, unsigned int *img,
 	const int w, const int h)
 {
-	int			fd;
+	int				fd;
 
 	if ((fd = save_file(name)) == -1)
 		return (-1);
