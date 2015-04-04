@@ -17,7 +17,7 @@
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM
-# define NB_FRACT 2
+# define NB_FRACT 3
 
 # define NM_COLOR 4 * 256
 
@@ -47,6 +47,7 @@ typedef struct		s_fracts
 	void			(*init)(t_fract *data);
 	void			*(*fract)(void *arg, const int x, const int);
 	int				(*input)();
+	int				thread_status;
 }					t_fracts;
 
 typedef struct		s_data
@@ -71,7 +72,13 @@ void				init_julia(t_fract *data);
 int					julia_input(unsigned int button, unsigned int key,
 	t_data *data);
 
-void				set_v2d(long double x, long double y, t_v2d *v);
+void				*sierpinski(void *arg, const int x, const int y);
+void				init_sierpinski(t_fract *data);
+int					sierpinski_input(unsigned int button, unsigned int key,
+	t_data *data);
+
+t_v2d				set_v2d(long double x, long double y, t_v2d *v);
+t_v2i				set_v2i(int x, int y, t_v2i *v);
 
 int					change_fract(t_data *data);
 

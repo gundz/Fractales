@@ -20,14 +20,17 @@ int					main_mlx(t_data *data)
 {
 	data->thread->f = data->fract->fract;
 	data->thread->data = &data->fract->data;
-	thread_it(data->thread);
+	if (data->fract->thread_status == 1)
+		thread_it(data->thread);
+	else
+		data->thread->f(&data->fract->data, -1, -1);
 	mlx_show_surf(&data->mlx, data->fract->data.surf);
 	return (0);
 }
 
 void				init_data(t_data *data, const int init)
 {
-	data->fract_i = init;
+	data->fract_i = init - 1;
 	change_fract(data);
 	data->tab = get_t_tab(RX, RY, 0);
 	data->thread = get_thread(NB_THREAD, data->tab, NULL, NULL);
@@ -36,11 +39,19 @@ void				init_data(t_data *data, const int init)
 		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
 	data->fracts[0].fract = &mandelbrot;
 	data->fracts[0].input = &mandelbrot_input;
+	data->fracts[0].thread_status = 1;
 	init_julia(&data->fracts[1].data);
 	data->fracts[1].data.surf =
 		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
 	data->fracts[1].fract = &julia;
 	data->fracts[1].input = &julia_input;
+	data->fracts[1].thread_status = 1;
+	init_sierpinski(&data->fracts[2].data);
+	data->fracts[2].data.surf =
+		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
+	data->fracts[2].fract = &sierpinski;
+	data->fracts[2].input = &sierpinski_input;
+	data->fracts[2].thread_status = 1;
 }
 
 int					get_option(int argc, char **argv)
@@ -48,9 +59,11 @@ int					get_option(int argc, char **argv)
 	if (argc != 2)
 		return (-1);
 	if (ft_strcmp(argv[1], "mandelbrot") == 0)
-		return (1);
-	else if (ft_strcmp(argv[1], "julia") == 0)
 		return (0);
+	if (ft_strcmp(argv[1], "julia") == 0)
+		return (1);
+	if (ft_strcmp(argv[1], "sierpinski") == 0)
+		return (2);
 	return (-1);
 }
 
@@ -61,7 +74,7 @@ int					main(int argc, char **argv)
 
 	if ((option = get_option(argc, argv)) == -1)
 	{
-		ft_putstr_fd("Usage : ./fractol [mandelbrot][julia]\n", 2);
+		ft_putstr_fd("Usage : ./fractol [mandelbrot][julia][sierpinski]\n", 2);
 		return (-1);
 	}
 	if (mlx_l_init(&data.mlx, "Fractol", -1, -1) != 0)

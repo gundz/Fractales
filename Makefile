@@ -6,7 +6,7 @@
 #    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/04 11:58:24 by fgundlac         ###   ########.fr        #
+#    Updated: 2015/04/04 16:22:41 by fgundlac         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = fractol
 
 CC = ~/.brew/bin/gcc-4.9
 #CFLAGS = -Wall -Wextra -Werror -g
-CFLAGS = -Wall -Wextra -Werror -Ofast
+CFLAGS = -Wall -Wextra -Werror -Ofast -g
 LIBS = -lmlx -framework OpenGL -framework AppKit
 
 PATH_INC = includes/
@@ -31,6 +31,10 @@ SRC =	main.c \
 		julia.c \
 		julia_input.c \
 		mandelbrot_input.c \
+		sierpinski.c \
+		sierpinski_input.c \
+		koch.c \
+		koch_input.c \
 		tga_tools.c \
 		tga.c \
 		tools.c \
