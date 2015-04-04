@@ -62,7 +62,7 @@ int					mlx_m_move(int x, int y, void *param);
 # define MIN(x,y) (x < y ? x : y)
 
 unsigned int		*surf_to_int(t_mlx_surf *surf);
-void				write_tga(char *name, unsigned int *img,
+int					write_tga(char *name, unsigned int *img,
 	const int w, const int h);
 
 #endif

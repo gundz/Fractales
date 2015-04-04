@@ -63,14 +63,15 @@ static void		write_data(const int fd, unsigned int *img,
 	}
 }
 
-void			write_tga(char *name, unsigned int *img,
+int				write_tga(char *name, unsigned int *img,
 	const int w, const int h)
 {
 	int			fd;
 
 	if ((fd = save_file(name)) == -1)
-		return ;
+		return (-1);
 	write_tga_header(fd, w, h);
 	write_data(fd, img, w, h);
 	close(fd);
+	return (0);
 }
