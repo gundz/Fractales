@@ -39,8 +39,15 @@ static void			take_screen(t_data *data)
 		return ;
 	tmp = ft_itoa(time(NULL));
 	name = ft_strijoin(3, "screen/screen-", tmp, ".tga");
-	write_tga(name, screen,
-		data->fract->data.surf->x, data->fract->data.surf->y);
+	if (write_tga(name, screen,
+		data->fract->data.surf->x, data->fract->data.surf->y) == -1)
+		ft_putstr_fd("Failed to take screenshot\n", 2);
+	else
+	{
+		ft_putstr("Screen saved under : ");
+		ft_putstr(name);
+		ft_putstr("\n");
+	}
 	free(screen);
 	free(name);
 	free(tmp);

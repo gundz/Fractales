@@ -13,7 +13,7 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-# define NB_THREAD 6
+# define NB_THREAD 16
 # define ZOOM 1.1
 # define RXZ RX / ZOOM
 # define RYZ RY / ZOOM

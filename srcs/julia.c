@@ -31,7 +31,10 @@ inline static void		set_color(const int x, const int y,
 		put_pixel(data->surf, x, y, 0xFFFFFF);
 	else
 	{
-		put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
+		if (data->i % 2 == 0)
+			put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
+		else
+			put_pixel(data->surf, x, y, (((data->i) << 8) + 0xAA5500));
 	}
 }
 

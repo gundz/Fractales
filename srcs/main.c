@@ -25,9 +25,9 @@ int					main_mlx(t_data *data)
 	return (0);
 }
 
-void				init_data(t_data *data)
+void				init_data(t_data *data, const int init)
 {
-	data->fract_i = -1;
+	data->fract_i = init;
 	change_fract(data);
 	data->tab = get_t_tab(RX, RY, 0);
 	data->thread = get_thread(NB_THREAD, data->tab, NULL, NULL);
@@ -43,13 +43,30 @@ void				init_data(t_data *data)
 	data->fracts[1].input = &julia_input;
 }
 
-int					main(void)
+int					get_option(int argc, char **argv)
+{
+	if (argc != 2)
+		return (-1);
+	if (ft_strcmp(argv[1], "mandelbrot"))
+		return (0);
+	else if (ft_strcmp(argv[1], "julia"))
+		return (1);
+	return (-1);
+}
+
+int					main(int argc, char **argv)
 {
 	t_data			data;
+	int				option;
 
+	if ((option = get_option(argc, argv)) == -1)
+	{
+		ft_putstr_fd("Usage : ./fractol [mandelbrot][julia]\n", 2);
+		return (-1);
+	}
 	if (mlx_l_init(&data.mlx, "Fractol", -1, -1) != 0)
 		ft_putstr_fd("Error while initializing MLX", 2);
-	init_data(&data);
+	init_data(&data, option);
 	main_mlx(&data);
 	mlx_expose_hook(data.mlx.win, &main_mlx, &data);
 	mlx_hook(data.mlx.win, MOTION, MOTION_MASK, &mlx_m_move, &data);
