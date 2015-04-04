@@ -27,6 +27,34 @@ void				put_pixel(t_mlx_surf *surf,
 	}
 }
 
+void				draw_line(t_mlx_surf *surf, t_v2i a, t_v2i b,
+	const int color)
+{
+	t_v2i			d;
+	t_v2i			s;
+	int				err;
+	int				e2;
+
+	d.x = ABS(b.x - a.x);
+	d.y = ABS(b.y - a.y);
+	s.x = (a.x < b.x ? 1 : -1);
+	s.y = (a.y < b.y ? 1 : -1);
+	err = d.x - d.y;
+	while (a.x != b.x || a.y != b.y)
+	{
+		put_pixel(surf, a.x, a.y, color);
+		if ((e2 = 2 * err) > -d.y)
+			err -= (d.y + 0 * (a.x += s.x));
+		if (a.x == b.x && a.y == b.y)
+		{
+			put_pixel(surf, a.x, a.y, color);
+			return ;
+		}
+		if (e2 < d.x)
+			err += (d.x + 0 * (a.y += s.y));
+	}
+}
+
 unsigned int		get_color_from_surf(t_mlx_surf *surf,
 	const int x, const int y)
 {

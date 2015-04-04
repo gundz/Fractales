@@ -15,7 +15,7 @@ NAME = fractol
 CC = ~/.brew/bin/gcc-4.9
 #CFLAGS = -Wall -Wextra -Werror -g
 CFLAGS = -Wall -Wextra -Werror -Ofast
-CFLAGS += -lmlx -framework OpenGL -framework AppKit
+LIBS = -lmlx -framework OpenGL -framework AppKit
 
 PATH_INC = includes/
 PATH_OBJ = obj
@@ -44,13 +44,13 @@ OBJ = $(patsubst %.c, $(PATH_OBJ)/%.o, $(SRC))
 all: lib $(NAME)
 
 $(NAME): namemes $(OBJ)
-	@ $(CC) $(OBJ) $(CFLAGS) -I $(PATH_INC) -I $(LIBINC) $(LIBLIB) -o $(NAME)
+	@ $(CC) $(OBJ) $(CFLAGS) $(LIBS) -I $(PATH_INC) -I $(LIBINC) $(LIBLIB) -o $(NAME)
 	@ echo " \033[4m\033[95md\033[93mo\033[32mn\033[96me \033[91m!\033[0m"
 
 $(PATH_OBJ)/%.o: $(addprefix $(PATH_SRC)/, %.c)
 	@ echo -n .
 	@ mkdir -p $(PATH_OBJ)
-	@ $(CC) -c $^ -I $(PATH_INC) $(CFLAGS) -I $(LIBINC) -o $@
+	@ $(CC) -c $^ $(CFLAGS) -I $(PATH_INC) $(CFLAGS) -I $(LIBINC) -o $@
 
 lib:
 	@ make -C $(LIBPATH)
