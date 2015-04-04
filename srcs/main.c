@@ -47,10 +47,10 @@ int					get_option(int argc, char **argv)
 {
 	if (argc != 2)
 		return (-1);
-	if (ft_strcmp(argv[1], "mandelbrot"))
-		return (0);
-	else if (ft_strcmp(argv[1], "julia"))
+	if (ft_strcmp(argv[1], "mandelbrot") == 0)
 		return (1);
+	else if (ft_strcmp(argv[1], "julia") == 0)
+		return (0);
 	return (-1);
 }
 

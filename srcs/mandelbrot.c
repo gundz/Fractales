@@ -19,7 +19,7 @@ void					init_mandelbrot(t_fract *data)
 {
 	int					i;
 
-	data->max_it = 150;
+	data->max_it = 300;
 	data->zoomp.x = 0;
 	data->zoomp.y = 0;
 	data->zoom = 1;
@@ -28,8 +28,8 @@ void					init_mandelbrot(t_fract *data)
 	{
 		data->c_map[i] = rgb_to_uint(i, i, i);
 		data->c_map[i + 255] = rgb_to_uint(i, i, 255 - i);
-		data->c_map[i + 255] = rgb_to_uint(i, i, i);
-		data->c_map[i + 255] = rgb_to_uint(0, 0, 0);
+		data->c_map[i + 255] = rgb_to_uint(i, i, 0);
+		data->c_map[i + 255] = rgb_to_uint(0, 127 - i, 0);
 		i++;
 	}
 }
