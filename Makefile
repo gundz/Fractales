@@ -33,8 +33,6 @@ SRC =	main.c \
 		mandelbrot_input.c \
 		sierpinski.c \
 		sierpinski_input.c \
-		koch.c \
-		koch_input.c \
 		tga_tools.c \
 		tga.c \
 		tools.c \
