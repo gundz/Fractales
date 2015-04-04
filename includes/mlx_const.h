@@ -20,6 +20,7 @@
 # define K_P 35
 # define K_V 9
 # define K_I 34
+# define K_O 31
 # define K_U 32
 # define K_LEFT 123
 # define K_RIGHT 124

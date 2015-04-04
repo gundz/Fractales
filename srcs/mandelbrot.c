@@ -23,6 +23,9 @@ void					init_mandelbrot(t_fract *data)
 	data->zoomp.x = 0;
 	data->zoomp.y = 0;
 	data->zoom = 1;
+	data->pos.x = 0;
+	data->pos.y = 0;
+	data->pos_inc = 0.1;
 	i = 0;
 	while (i < 256)
 	{
@@ -62,16 +65,16 @@ void					*mandelbrot(void *arg, const int x, const int y)
 	set_v2d(0.0, 0.0, &coor);
 	set_v2d(0.0, 0.0, &tmp2);
 	data->i = 0;
-	while ((tmp2.x + tmp2.y) < 100 && data->i < data->max_it)
+	while ((tmp2.x + tmp2.y) < 4 && data->i < data->max_it)
 	{
 		tmp.x = coor.x;
 		tmp.y = coor.y;
 		tmp2.x = tmp.x * tmp.x;
 		tmp2.y = tmp.y * tmp.y;
 		coor.x = tmp2.x - tmp2.y + (((x + data->zoomp.x) \
-			/ data->zoom / RX) * 4 - 2);
+			/ data->zoom / RX) * 4 - 2) + data->pos.x;
 		coor.y = (tmp.x * tmp.y) + (tmp.x * tmp.y) + \
-			(((y + data->zoomp.y) / data->zoom / RY) * 4 - 2);
+			(((y + data->zoomp.y) / data->zoom / RY) * 4 - 2) + data->pos.y;
 		data->i++;
 	}
 	set_color(x, y, data, tmp2);

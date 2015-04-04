@@ -62,6 +62,31 @@ int					change_fract(t_data *data)
 	return (1);
 }
 
+int					screenshot(unsigned int key, t_data *data)
+{
+	int				ret;
+
+	ret = 0;
+	if (key == K_P)
+		take_screen(data);
+	if (key == K_U)
+	{
+		data->fract->data.max_it = 42;
+		ret++;
+	}
+	if (key == K_I)
+	{
+		data->fract->data.max_it *= 1.5;
+		ret++;
+	}
+	if (key == K_O)
+	{
+		data->fract->data.max_it /= 1.5;
+		ret++;
+	}
+	return (ret);
+}
+
 int					mlx_k_press(unsigned int key, void *param)
 {
 	int				ret;
@@ -73,19 +98,8 @@ int					mlx_k_press(unsigned int key, void *param)
 		quit(data);
 	if (key == K_V)
 		ret += change_fract(data);
-	if (key == K_P)
-		take_screen(data);
 	ret += data->fract->input(-1, key, data);
-	if (key == K_U)
-	{
-		data->fract->data.max_it = 42;
-		ret++;
-	}
-	if (key == K_I)
-	{
-		data->fract->data.max_it *= 2;
-		ret++;
-	}
+	ret += screenshot(key, data);
 	if (ret > 0)
 		main_mlx(data);
 	return (0);
