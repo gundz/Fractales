@@ -54,7 +54,7 @@ t_mlx_surf			*mlx_create_rgb_surface(void *const mlx,
 void				mlx_free_surface(void *mlx, t_mlx_surf *surf);
 void				mlx_show_surf(t_mlx *mlx, t_mlx_surf *surf);
 
-void				put_pixel(t_mlx_surf *surf,
+inline void			put_pixel(t_mlx_surf *surf,
 	const int x, const int y, const int color);
 void				draw_line(t_mlx_surf *surf, t_v2i a, t_v2i b,
 	const int color);
