@@ -48,15 +48,5 @@ int						sierpinski_input(unsigned int button, unsigned int key,
 		ret += zoom_in(data);
 	if (button == M_RIGHT || key == M_S_DOWN)
 		ret += zoom_out(data);
-	if (key == K_U)
-	{
-		data->fract->data.max_it = 42;
-		ret++;
-	}
-	if (key == K_I)
-	{
-		data->fract->data.max_it *= 2;
-		ret++;
-	}
 	return (ret);
 }

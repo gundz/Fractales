@@ -19,7 +19,7 @@ void					init_sierpinski(t_fract *data)
 {
 	int					i;
 
-	data->max_it = 300;
+	data->max_it = 2;
 	data->zoomp.x = 0;
 	data->zoomp.y = 0;
 	data->zoom = 1;

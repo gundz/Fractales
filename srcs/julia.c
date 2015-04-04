@@ -13,6 +13,7 @@
 #include <mlx_lib.h>
 #include <thread.h>
 #include <fractol.h>
+#include <math.h>
 
 void					init_julia(t_fract *data)
 {
@@ -25,16 +26,17 @@ void					init_julia(t_fract *data)
 }
 
 inline static void		set_color(const int x, const int y,
-	t_fract *data)
+	t_fract *data, t_v2d tmp)
 {
 	if (data->i == data->max_it)
+	{
 		put_pixel(data->surf, x, y, 0xFFFFFF);
+	}
 	else
 	{
-		if (data->i % 2 == 0)
-			put_pixel(data->surf, x, y, (((data->i) << 8) + 0x00FF00));
-		else
-			put_pixel(data->surf, x, y, (((data->i) << 8) + 0xAA5500));
+		data->i = data->i - log(log(tmp.x + tmp.y)) / log(2);
+		data->i = ((NM_COLOR - 1) * data->i) / data->max_it;
+		put_pixel(data->surf, x, y, data->c_map[(int)data->i]);
 	}
 }
 
@@ -61,6 +63,6 @@ void					*julia(void *arg, const int x, const int y)
 		coor.y = (tmp.x * coor.y + tmp.x * coor.y) + data->coor.y;
 		data->i++;
 	}
-	set_color(x, y, data);
+	set_color(x, y, data, tmp2);
 	return (NULL);
 }

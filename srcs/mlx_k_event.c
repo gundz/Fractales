@@ -76,6 +76,16 @@ int					mlx_k_press(unsigned int key, void *param)
 	if (key == K_P)
 		take_screen(data);
 	ret += data->fract->input(-1, key, data);
+	if (key == K_U)
+	{
+		data->fract->data.max_it = 42;
+		ret++;
+	}
+	if (key == K_I)
+	{
+		data->fract->data.max_it *= 2;
+		ret++;
+	}
 	if (ret > 0)
 		main_mlx(data);
 	return (0);
