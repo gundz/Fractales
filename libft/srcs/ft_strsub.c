@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_free.c                                         :+:      :+:    :+:   */
+/*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/18 09:38:04 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/03/18 09:38:05 by fgundlac         ###   ########.fr       */
+/*   Created: 2015/03/17 21:01:45 by fgundlac          #+#    #+#             */
+/*   Updated: 2015/03/17 21:01:46 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
 #include <stdlib.h>
 
-void				lst_free(t_list **lst, const int free_data)
+char			*ft_strsub(char const *s, unsigned int start, size_t len)
 {
-	t_list			*tmp;
+	char		*fresh;
+	size_t		i;
 
-	while (*lst != NULL)
+	if (!(fresh = (char *)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	i = 0;
+	while (i < len)
 	{
-		if ((*lst)->next == NULL)
-			break ;
-		tmp = (*lst)->next;
-		if (free_data == 1)
-			free((*lst)->data);
-		free(*lst);
-		*lst = tmp;
+		fresh[i] = s[i + start];
+		i++;
 	}
-	if (free_data == 1)
-		free((*lst)->data);
-	free(*lst);
-	*lst = NULL;
+	fresh[i] = '\0';
+	return (fresh);
 }

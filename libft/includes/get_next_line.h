@@ -1,34 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lst_free.c                                         :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/18 09:38:04 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/03/18 09:38:05 by fgundlac         ###   ########.fr       */
+/*   Created: 2015/03/17 21:02:15 by fgundlac          #+#    #+#             */
+/*   Updated: 2015/03/17 21:02:17 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
-#include <stdlib.h>
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
-void				lst_free(t_list **lst, const int free_data)
+# define BUFF_SIZE 4096
+
+typedef struct		s_gnl
 {
-	t_list			*tmp;
+	char			*tmp;
+	int				i;
+	int				size;
+}					t_gnl;
 
-	while (*lst != NULL)
-	{
-		if ((*lst)->next == NULL)
-			break ;
-		tmp = (*lst)->next;
-		if (free_data == 1)
-			free((*lst)->data);
-		free(*lst);
-		*lst = tmp;
-	}
-	if (free_data == 1)
-		free((*lst)->data);
-	free(*lst);
-	*lst = NULL;
-}
+int					get_next_line(int const fd, char **line);
+
+#endif

@@ -1,21 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: fgundlac <fgundlac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/03/17 21:00:46 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/03/17 21:01:20 by fgundlac         ###   ########.fr       */
+/*   Created: 2015/10/13 12:17:24 by fgundlac          #+#    #+#             */
+/*   Updated: 2015/10/13 12:17:24 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int					ft_strlen(const char *const str)
-{
-	int				len;
+#include <stddef.h>
 
-	len = 0;
-	while (str[len] != '\0')
-		len++;
-	return (len);
+char				*ft_strchr(const char *src, int c)
+{
+	while (*src != c)
+	{
+		if (*src == '\0')
+			return (NULL);
+		src++;
+	}
+	return ((char *)src);
 }

@@ -15,8 +15,8 @@
 
 # include <mlx_const.h>
 
-# define RX		640
-# define RY		480
+# define RX		800
+# define RY		600
 # define RX2	RX / 2
 # define RY2	RY / 2
 
@@ -54,8 +54,8 @@ t_mlx_surf			*mlx_create_rgb_surface(void *const mlx,
 void				mlx_free_surface(void *mlx, t_mlx_surf *surf);
 void				mlx_show_surf(t_mlx *mlx, t_mlx_surf *surf);
 
-inline void			put_pixel(t_mlx_surf *surf,
-	const int x, const int y, const int color);
+void				put_pixel(t_mlx_surf *surf,
+		const int x, const int y, const int color);
 void				draw_line(t_mlx_surf *surf, t_v2i a, t_v2i b,
 	const int color);
 unsigned int		get_color_from_surf(t_mlx_surf *surf,

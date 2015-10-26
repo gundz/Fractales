@@ -22,7 +22,7 @@ typedef struct		s_list
 t_list				*lst_create_elem(void *data);
 void				lst_push_back(t_list **lst, void *data);
 void				lst_b_sort(t_list **lst, int (*cmp)(), const int rev);
-void				lst_free(t_list *lst, const int free_data);
+void				lst_free(t_list **lst, const int free_data);
 char				*lst_to_char(t_list *lst);
 int					lst_csize(t_list *lst);
 unsigned int		lst_count(t_list *lst);

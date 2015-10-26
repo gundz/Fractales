@@ -12,7 +12,7 @@
 
 #include <stddef.h>
 
-unsigned int				ft_ctablen(const char **const tab)
+unsigned int				ft_ctablen(char **const tab)
 {
 	unsigned int			len;
 

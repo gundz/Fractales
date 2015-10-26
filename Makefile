@@ -1,77 +1,107 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2015/04/01 01:27:56 by fgundlac          #+#    #+#              #
-#    Updated: 2015/04/04 16:22:41 by fgundlac         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME =			fractol
 
-NAME = fractol
+SRCS =			\
+			main.c \
+			mlx_init.c \
+			mlx_surface.c \
+			mlx_draw.c \
+			mlx_k_event.c \
+			mlx_m_event.c \
+			mandelbrot.c \
+			julia.c \
+			julia_input.c \
+			mandelbrot_input.c \
+			sierpinski.c \
+			sierpinski_input.c \
+			tga_tools.c \
+			tga.c \
+			tools.c \
 
-CC = ~/.brew/bin/gcc-4.9
-#CFLAGS = -Wall -Wextra -Werror -g
-CFLAGS = -Wall -Wextra -Werror -Ofast -g
-LIBS = -lmlx -framework OpenGL -framework AppKit
+#TYPE: LIB or PROGRAM
+TYPE =			PROGAM
 
-PATH_INC = includes/
-PATH_OBJ = obj
-PATH_SRC = srcs
+#OS: LINUX/OSX or WINDOWS
+OS =			LINUX
 
-SRC =	main.c \
-		mlx_init.c \
-		mlx_surface.c \
-		mlx_draw.c \
-		mlx_k_event.c \
-		mlx_m_event.c \
-		mandelbrot.c \
-		julia.c \
-		julia_input.c \
-		mandelbrot_input.c \
-		sierpinski.c \
-		sierpinski_input.c \
-		tga_tools.c \
-		tga.c \
-		tools.c \
+UNIX_CC =		gcc
+WIN_CC =		i686-w64-mingw32-gcc
 
-LIBPATH = libft/
-LIBINC = $(LIBPATH)includes
-LIBLIB = $(LIBPATH)libft.a
+EXTENTION =		c
 
-OBJ = $(patsubst %.c, $(PATH_OBJ)/%.o, $(SRC))
+CFLAGS =		-Wall -Werror -Wextra -Ofast
 
-all: lib $(NAME)
+LIB_NAMES =		-lft
+LIB_PATH =		./libft/
 
-$(NAME): namemes $(OBJ)
-	@ $(CC) $(OBJ) $(CFLAGS) $(LIBS) -I $(PATH_INC) -I $(LIBINC) $(LIBLIB) -o $(NAME)
-	@ echo " \033[4m\033[95md\033[93mo\033[32mn\033[96me \033[91m!\033[0m"
+LIB_SUPP =		-lmlx -framework OpenGL -framework AppKit
+#LIB_SUPP_INC =		-I ./foo/inc/
 
-$(PATH_OBJ)/%.o: $(addprefix $(PATH_SRC)/, %.c)
-	@ echo -n .
-	@ mkdir -p $(PATH_OBJ)
-	@ $(CC) -c $^ $(CFLAGS) -I $(PATH_INC) $(CFLAGS) -I $(LIBINC) -o $@
+SRC_PATH = 		./srcs/
+INC_PATH = 		./includes/
+OBJ_PATH =		./obj/
 
-lib:
-	@ make -C $(LIBPATH)
+CC =			$(UNIX_CC)
+OBJ_NAME = $(SRCS:.$(EXTENTION)=.o)
+SRC = $(addprefix $(SRC_PATH), $(SRCS))
+OBJ = $(addprefix $(OBJ_PATH), $(OBJ_NAME))
+LIB_INC = $(addprefix -I, $(addsuffix includes, $(LIB_PATH)))
+LIB_LIB = $(addprefix -L, $(LIB_PATH))
+INC = $(addprefix -I, $(INC_PATH))
+INC += $(LIB_SUPP_INC)
+LDFLAGS = $(LIB) $(LIB_NAMES)
+EMPTY =
+
+ifeq ($(OS), WINDOWS)
+NAME := $(NAME).exe
+CC = $(WIN_CC)
+else
+endif
+
+all: libs name $(OBJ) done $(NAME)
+
+name :
+	@ echo "\033[4;7mCompiling Objects:\033[0m [$(NAME)]"
+
+done :
+	@ echo "\n\033[4m\033[95md\033[93mo\033[32mn\033[96me\033[0m \033[91m!\033[0m\n"
+
+$(NAME): $(OBJ)
+	@ echo "\033[4;7mCompiling binary:\033[0m [$(NAME)]"
+ifeq ($(TYPE), LIB)
+	@ ar -rc $(NAME) $(OBJ)
+	@ ranlib $(NAME)
+else
+	@ $(CC) $(OBJ) $(LDFLAGS) $(LIB_LIB) $(LIB_SUPP) -o $(NAME)
+endif
+	@ echo "\033[4m\033[95md\033[93mo\033[32mn\033[96me\033[0m \033[91m!\033[0m\n"
+
+$(OBJ_PATH)%.o: $(SRC_PATH)%.$(EXTENTION)
+	@ printf "\033[37;7m+\033[0m"
+	@ mkdir -p $(OBJ_PATH) 2> /dev/null
+	@ $(CC) $(CFLAGS) $(LIB_INC) $(INC) -c $< -o $@
+
+ifeq ($(LIB_PATH), $(EMPTY))
+else
+libs:
+	@ $(foreach lib, $(LIB_PATH), make -C $(lib);)
+endif
 
 clean:
-	@ make clean -C $(LIBPATH)
-	@ rm -rf $(PATH_OBJ)
-	@ echo "Cleaning $(NAME) \
-		\033[4m\033[95md\033[93mo\033[32mn\033[96me \033[91m!\033[0m"
+	@ rm -rf $(OBJ_PATH)
+	@ echo "\033[4;7mCleaning:\033[0m [$(NAME)]\n\033[4m\033[95md\033[93mo\033[32mn\033[96me\033[0m \033[91m!\033[0m\n"
+ifeq ($(LIB_PATH), $(EMPTY))
+else
+	@ $(foreach lib, $(LIB_PATH), make clean -C $(lib);)
+endif
 
 fclean: clean
-	@ make fclean -C $(LIBPATH)
-	@ rm -rf $(NAME)
-	@ echo "Fcleaning $(NAME) \
-		\033[4m\033[95md\033[93mo\033[32mn\033[96me \033[91m!\033[0m"
-
-namemes :
-	@ echo -n Compiling $(NAME)
+	@ rm -f $(NAME)
+	@ echo "\033[4;7mFcleaning:\033[0m [$(NAME)]\033[0m\n\033[4m\033[95md\033[93mo\033[32mn\033[96me\033[0m \033[91m!\033[0m\n"
+ifeq ($(LIB_PATH), $(EMPTY))
+else
+	@ $(foreach lib, $(LIB_PATH), make fclean -C $(lib);)
+endif
 
 re: fclean all
 
-.PHONY: clean fclean re
+.PHONY: all clean fclean re libs

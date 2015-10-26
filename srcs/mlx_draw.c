@@ -13,7 +13,7 @@
 #include <mlx_lib.h>
 #include <mlx.h>
 
-inline void			put_pixel(t_mlx_surf *surf,
+void				put_pixel(t_mlx_surf *surf,
 		const int x, const int y, const int color)
 {
 	int				res;
