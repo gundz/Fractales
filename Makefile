@@ -1,21 +1,7 @@
-NAME =			fractol
+NAME =			a.out
 
 SRCS =			\
 			main.c \
-			mlx_init.c \
-			mlx_surface.c \
-			mlx_draw.c \
-			mlx_k_event.c \
-			mlx_m_event.c \
-			mandelbrot.c \
-			julia.c \
-			julia_input.c \
-			mandelbrot_input.c \
-			sierpinski.c \
-			sierpinski_input.c \
-			tga_tools.c \
-			tga.c \
-			tools.c \
 
 #TYPE: LIB or PROGRAM
 TYPE =			PROGAM
@@ -28,13 +14,20 @@ WIN_CC =		i686-w64-mingw32-gcc
 
 EXTENTION =		c
 
-CFLAGS =		-Wall -Werror -Wextra -Ofast
+CFLAGS =		-Wall -Werror -Wextra
 
-LIB_NAMES =		-lft
-LIB_PATH =		./libft/
+LIB_NAMES =		-lesdl -lOCL
+LIB_PATH =		./ESDL_Lib/ ./LibOpenCL/
 
-LIB_SUPP =		-lmlx -framework OpenGL -framework AppKit
-#LIB_SUPP_INC =		-I ./foo/inc/
+OS := $(shell uname)
+
+ifeq ($(OS), Linux)
+	LIB_SUPP += -I $(AMDAPPSDKROOT)/include/ -L $(AMDAPPSDKROOT)/lib/x86_64/sdk/ -lOpenCL
+else
+	LIB_SUPP += -I/usr/local/cuda/include -framework OpenCL
+endif
+
+LIB_SUPP_INC =	-I LibOpenCL/includes
 
 SRC_PATH = 		./srcs/
 INC_PATH = 		./includes/
@@ -52,9 +45,15 @@ LDFLAGS = $(LIB) $(LIB_NAMES)
 EMPTY =
 
 ifeq ($(OS), WINDOWS)
+SDL2_WIN_PATH =		$(shell pwd)/ESDL_Lib/SDL2
+LIB_SUPP_INC =		`$(SDL2_WIN_PATH)/bin/sdl2-config --prefix=$(SDL2_WIN_PATH) --cflags`
+LIB_SUPP =			`$(SDL2_WIN_PATH)/bin/sdl2-config --prefix=$(SDL2_WIN_PATH) --libs`
 NAME := $(NAME).exe
 CC = $(WIN_CC)
 else
+LIB_SUPP_INC +=	`sdl2-config --cflags`
+LIB_SUPP +=		`sdl2-config --libs`
+CC = $(UNIX_CC)
 endif
 
 all: libs name $(OBJ) done $(NAME)

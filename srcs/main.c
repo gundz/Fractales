@@ -1,90 +1,126 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/04/01 01:08:38 by fgundlac          #+#    #+#             */
-/*   Updated: 2015/04/01 01:08:39 by fgundlac         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include <easy_sdl.h>
+#include <OCL.h>
 
-#include <libft.h>
-#include <thread.h>
-#include <mlx_lib.h>
-#include <fractol.h>
-#include <mlx.h>
+#define RX 1920
+#define RY 1080
 
-int					main_mlx(t_data *data)
+typedef struct			s_data
 {
-	data->thread->f = data->fract->fract;
-	data->thread->data = &data->fract->data;
-	if (data->fract->thread_status == 1)
-		thread_it(data->thread);
-	else
-		data->thread->f(&data->fract->data, -1, -1);
-	mlx_show_surf(&data->mlx, data->fract->data.surf);
-	return (0);
+	t_esdl				*esdl;
+}						t_data;
+
+void
+compute(SDL_Surface *surf, t_cl_data *cl_data)
+{
+	#define				NUM_ELEMENTS_X RX
+	#define				NUM_ELEMENTS_Y RY
+	#define				NUM_ELEMENTS (NUM_ELEMENTS_X * NUM_ELEMENTS_Y)
+
+	int					tab[NUM_ELEMENTS];
+	//cl_mem				input;
+	cl_mem				output;
+
+	size_t				i, j;
+	// for (i = 0; i < NUM_ELEMENTS; i++)
+	// {
+	// 	tab[i] = 0;
+	// }
+
+	//input = clCreateBuffer(cl_data.context, CL_MEM_READ_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
+	output = clCreateBuffer(cl_data->context, CL_MEM_WRITE_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
+
+	//clEnqueueWriteBuffer(cl_data.command_queue, input, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
+
+	//clSetKernelArg(cl_data.kernel, 0, sizeof(cl_mem), &input);
+	clSetKernelArg(cl_data->kernel, 0, sizeof(cl_mem), &output);
+
+	size_t				global_item_size[2] = {NUM_ELEMENTS_X, NUM_ELEMENTS_Y};
+    // size_t				local_item_size[2] = {4, 4};
+
+	clEnqueueNDRangeKernel(cl_data->command_queue, cl_data->kernel, 2, NULL, global_item_size, NULL, 0, NULL, NULL);
+	clFinish(cl_data->command_queue);
+
+	clEnqueueReadBuffer(cl_data->command_queue, output, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
+
+	// for (i = 0; i < NUM_ELEMENTS_Y; i++)
+	// {
+	// 	printf("%zu :\n", i);
+	// 	for (j = 0; j < NUM_ELEMENTS_X; j++)
+	// 		printf("%f | ", tab[i * NUM_ELEMENTS_X + j]);
+	// 	printf("\n");
+	// }
+
+	for (i = 0; i < NUM_ELEMENTS_Y; i++)
+	{
+		for (j = 0; j < NUM_ELEMENTS_X; j++)
+			Esdl_put_pixel(surf, j, i, tab[i * NUM_ELEMENTS_X + j]);
+	}
+
+	//clReleaseMemObject(input);
+	clReleaseMemObject(output);
 }
 
-void				init_data(t_data *data, const int init)
+void					test(t_data *data, t_cl_data *cl_data)
 {
-	data->fract_i = init - 1;
-	change_fract(data);
-	data->tab = get_t_tab(RX, RY, 0);
-	data->thread = get_thread(NB_THREAD, data->tab, NULL, NULL);
-	init_mandelbrot(&data->fracts[0].data);
-	data->fracts[0].data.surf =
-		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
-	data->fracts[0].fract = &mandelbrot;
-	data->fracts[0].input = &mandelbrot_input;
-	data->fracts[0].thread_status = 1;
-	init_julia(&data->fracts[1].data);
-	data->fracts[1].data.surf =
-		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
-	data->fracts[1].fract = &julia;
-	data->fracts[1].input = &julia_input;
-	data->fracts[1].thread_status = 1;
-	init_sierpinski(&data->fracts[2].data);
-	data->fracts[2].data.surf =
-		mlx_create_rgb_surface(data->mlx.mlx, RX, RY, 0x000000);
-	data->fracts[2].fract = &sierpinski;
-	data->fracts[2].input = &sierpinski_input;
-	data->fracts[2].thread_status = 1;
+	SDL_Surface			*surf;
+	SDL_Texture			*tex;
+
+	surf = Esdl_create_surface(RX, RY);
+
+	compute(surf, cl_data);
+
+	tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, surf);
+	SDL_FreeSurface(surf);
+
+	SDL_RenderClear(data->esdl->en.ren);
+	SDL_RenderCopy(data->esdl->en.ren, tex, NULL, NULL);
+	SDL_DestroyTexture(tex);
+	SDL_RenderPresent(data->esdl->en.ren);
 }
 
-int					get_option(int argc, char **argv)
+void
+init(t_cl_data *cl_data)
 {
-	if (argc != 2)
-		return (-1);
-	if (ft_strcmp(argv[1], "mandelbrot") == 0)
-		return (0);
-	if (ft_strcmp(argv[1], "julia") == 0)
-		return (1);
-	if (ft_strcmp(argv[1], "sierpinski") == 0)
-		return (2);
-	return (-1);
+	if (OCLInit(cl_data) == CL_SUCCESS)
+	{
+		if (OCLBuildPRogram(cl_data, "srcs/test.cl") == CL_SUCCESS)
+		{
+			if (OCLCreateKernel(cl_data, "mandelbrot") == CL_SUCCESS)
+			{
+			}
+		}
+	}
 }
 
 int					main(int argc, char **argv)
 {
 	t_data			data;
-	int				option;
+	t_esdl			esdl;
+	t_cl_data		cl_data;
 
-	if ((option = get_option(argc, argv)) == -1)
-	{
-		ft_putstr_fd("Usage : ./fractol [mandelbrot][julia][sierpinski]\n", 2);
+	data.esdl = &esdl;
+
+	if (Esdl_init(&esdl, RX, RY, 60, "Engine") == -1)
 		return (-1);
+	init(&cl_data);
+	while (esdl.run)
+	{
+		Esdl_update_events(&esdl.en.in, &esdl.run);
+
+		test(&data, &cl_data);
+
+		Esdl_fps_limit(&esdl);
+		Esdl_fps_counter(&esdl);
 	}
-	if (mlx_l_init(&data.mlx, "Fractol", -1, -1) != 0)
-		ft_putstr_fd("Error while initializing MLX", 2);
-	init_data(&data, option);
-	main_mlx(&data);
-	mlx_expose_hook(data.mlx.win, &main_mlx, &data);
-	mlx_hook(data.mlx.win, MOTION, MOTION_MASK, &mlx_m_move, &data);
-	mlx_key_hook(data.mlx.win, &mlx_k_press, &data);
-	mlx_mouse_hook(data.mlx.win, &mlx_m_button, &data);
-	mlx_loop(data.mlx.mlx);
+
+
+	clReleaseKernel(cl_data.kernel);
+	clReleaseProgram(cl_data.program);
+	clReleaseCommandQueue(cl_data.command_queue);
+	clReleaseContext(cl_data.context);	
+
+	Esdl_quit(&esdl);
+	(void)argc;
+	(void)argv;
 	return (0);
 }

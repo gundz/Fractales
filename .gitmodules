@@ -1,0 +1,6 @@
+[submodule "LibOpenCL"]
+	path = LibOpenCL
+	url = https://github.com/gundz/LibOpenCL.git
+[submodule "ESDL_Lib"]
+	path = ESDL_Lib
+	url = https://github.com/gundz/ESDL_Lib.git
