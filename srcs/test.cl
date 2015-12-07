@@ -43,7 +43,7 @@ mandelbrot(__global int *output)
 	double				y = 0;
 	int					it = 0;
 
-	int					max_it = 100;
+	int					max_it = 1000;
 
 	while (x * x + y * y <= 4 && it < max_it)
 	{

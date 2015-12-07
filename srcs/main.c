@@ -21,10 +21,6 @@ compute(SDL_Surface *surf, t_cl_data *cl_data)
 	cl_mem				output;
 
 	size_t				i, j;
-	// for (i = 0; i < NUM_ELEMENTS; i++)
-	// {
-	// 	tab[i] = 0;
-	// }
 
 	//input = clCreateBuffer(cl_data.context, CL_MEM_READ_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
 	output = clCreateBuffer(cl_data->context, CL_MEM_WRITE_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
@@ -108,6 +104,7 @@ int					main(int argc, char **argv)
 		Esdl_update_events(&esdl.en.in, &esdl.run);
 
 		test(&data, &cl_data);
+
 
 		Esdl_fps_limit(&esdl);
 		Esdl_fps_counter(&esdl);
