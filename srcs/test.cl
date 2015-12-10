@@ -13,13 +13,13 @@ getIndexY(void)
 int
 getGridWidth(void)
 {
-	return (get_num_groups(0) * get_local_size((0)));
+	return (get_global_size(0));
 }
 
 int
 getGridHeight(void)
 {
-	return (get_num_groups(0) * get_local_size((0)));
+	return (get_global_size(1));
 }
 
 int
@@ -43,7 +43,7 @@ mandelbrot(__global int *output)
 	double				y = 0;
 	int					it = 0;
 
-	int					max_it = 1000;
+	int					max_it = 10000;
 
 	while (x * x + y * y <= 4 && it < max_it)
 	{
@@ -65,4 +65,3 @@ mandelbrot(__global int *output)
 			output[getIndex()] = 0xFFFFFFFF;
 	}
 }
-

@@ -1,6 +1,8 @@
 #include <easy_sdl.h>
 #include <OCL.h>
 
+#include <sys/time.h>
+
 #define RX 1920
 #define RY 1080
 
@@ -12,39 +14,31 @@ typedef struct			s_data
 void
 compute(SDL_Surface *surf, t_cl_data *cl_data)
 {
+
+
 	#define				NUM_ELEMENTS_X RX
 	#define				NUM_ELEMENTS_Y RY
 	#define				NUM_ELEMENTS (NUM_ELEMENTS_X * NUM_ELEMENTS_Y)
 
-	int					tab[NUM_ELEMENTS];
-	//cl_mem				input;
+	unsigned int		tab[NUM_ELEMENTS];
 	cl_mem				output;
 
 	size_t				i, j;
 
-	//input = clCreateBuffer(cl_data.context, CL_MEM_READ_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
 	output = clCreateBuffer(cl_data->context, CL_MEM_WRITE_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
 
-	//clEnqueueWriteBuffer(cl_data.command_queue, input, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
-
-	//clSetKernelArg(cl_data.kernel, 0, sizeof(cl_mem), &input);
 	clSetKernelArg(cl_data->kernel, 0, sizeof(cl_mem), &output);
 
 	size_t				global_item_size[2] = {NUM_ELEMENTS_X, NUM_ELEMENTS_Y};
-    // size_t				local_item_size[2] = {4, 4};
+    // size_t				local_item_size[2] = {16, 16};
+
 
 	clEnqueueNDRangeKernel(cl_data->command_queue, cl_data->kernel, 2, NULL, global_item_size, NULL, 0, NULL, NULL);
+
 	clFinish(cl_data->command_queue);
 
-	clEnqueueReadBuffer(cl_data->command_queue, output, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
 
-	// for (i = 0; i < NUM_ELEMENTS_Y; i++)
-	// {
-	// 	printf("%zu :\n", i);
-	// 	for (j = 0; j < NUM_ELEMENTS_X; j++)
-	// 		printf("%f | ", tab[i * NUM_ELEMENTS_X + j]);
-	// 	printf("\n");
-	// }
+	clEnqueueReadBuffer(cl_data->command_queue, output, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
 
 	for (i = 0; i < NUM_ELEMENTS_Y; i++)
 	{
@@ -52,7 +46,6 @@ compute(SDL_Surface *surf, t_cl_data *cl_data)
 			Esdl_put_pixel(surf, j, i, tab[i * NUM_ELEMENTS_X + j]);
 	}
 
-	//clReleaseMemObject(input);
 	clReleaseMemObject(output);
 }
 
