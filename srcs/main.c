@@ -3,8 +3,9 @@
 
 #include <sys/time.h>
 
-#define RX 1920
-#define RY 1080
+#define RX 640
+#define RY 480
+#define SIZEBITCH RX * RY * 4
 
 typedef struct			s_data
 {
@@ -15,38 +16,18 @@ void
 compute(SDL_Surface *surf, t_cl_data *cl_data)
 {
 
+	// size_t				i, j;	
 
-	#define				NUM_ELEMENTS_X RX
-	#define				NUM_ELEMENTS_Y RY
-	#define				NUM_ELEMENTS (NUM_ELEMENTS_X * NUM_ELEMENTS_Y)
+	clSetKernelArg(cl_data->kernel, 0, sizeof(cl_mem), &(cl_data->output));
 
-	unsigned int		tab[NUM_ELEMENTS];
-	cl_mem				output;
-
-	size_t				i, j;
-
-	output = clCreateBuffer(cl_data->context, CL_MEM_WRITE_ONLY, sizeof(*tab) * NUM_ELEMENTS, NULL, NULL);
-
-	clSetKernelArg(cl_data->kernel, 0, sizeof(cl_mem), &output);
-
-	size_t				global_item_size[2] = {NUM_ELEMENTS_X, NUM_ELEMENTS_Y};
-    // size_t				local_item_size[2] = {16, 16};
-
+	size_t				global_item_size[2] = {surf->w, surf->h};
+    //size_t				local_item_size[2] = {16, 16};
 
 	clEnqueueNDRangeKernel(cl_data->command_queue, cl_data->kernel, 2, NULL, global_item_size, NULL, 0, NULL, NULL);
 
 	clFinish(cl_data->command_queue);
 
-
-	clEnqueueReadBuffer(cl_data->command_queue, output, CL_TRUE, 0, sizeof(*tab) * NUM_ELEMENTS, tab, 0, NULL, NULL);
-
-	for (i = 0; i < NUM_ELEMENTS_Y; i++)
-	{
-		for (j = 0; j < NUM_ELEMENTS_X; j++)
-			Esdl_put_pixel(surf, j, i, tab[i * NUM_ELEMENTS_X + j]);
-	}
-
-	clReleaseMemObject(output);
+	clEnqueueReadBuffer(cl_data->command_queue, cl_data->output, CL_TRUE, 0, SIZEBITCH, surf->pixels, 0, NULL, NULL);
 }
 
 void					test(t_data *data, t_cl_data *cl_data)
@@ -79,6 +60,9 @@ init(t_cl_data *cl_data)
 			}
 		}
 	}
+
+
+	cl_data->output = clCreateBuffer(cl_data->context, CL_MEM_READ_WRITE, SIZEBITCH, NULL, NULL);
 }
 
 int					main(int argc, char **argv)
@@ -98,12 +82,11 @@ int					main(int argc, char **argv)
 
 		test(&data, &cl_data);
 
-
 		Esdl_fps_limit(&esdl);
 		Esdl_fps_counter(&esdl);
 	}
 
-
+	clReleaseMemObject(cl_data.output);
 	clReleaseKernel(cl_data.kernel);
 	clReleaseProgram(cl_data.program);
 	clReleaseCommandQueue(cl_data.command_queue);

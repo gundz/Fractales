@@ -28,9 +28,8 @@ getIndex(void)
 	return (getIndexY() * getGridWidth() + getIndexX());
 }
 
-__kernel
-void
-mandelbrot(__global int *output)
+__kernel void
+mandelbrot(__global unsigned int *output)
 {
 	int					col = getIndexX();
 	int					row = getIndexY();
@@ -42,12 +41,13 @@ mandelbrot(__global int *output)
 	double				x = 0;
 	double				y = 0;
 	int					it = 0;
+	double				x_new;
 
-	int					max_it = 10000;
+	int					max_it = 500;
 
 	while (x * x + y * y <= 4 && it < max_it)
 	{
-		double x_new = x * x - y * y + c_re;
+		x_new = x * x - y * y + c_re;
 		y = 2 * x * y + c_im;
 		x = x_new;
 		it++;
