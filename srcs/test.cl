@@ -73,23 +73,19 @@ mandelbrot(__global unsigned int *output, __global t_fdata *input)
 
 		zx2 = x * x;
 		zy2 = y * y;
-		
-		//if (iter < max_it / 2)
-		//{
-		//	output[getIndex()] = (0x000000FF << 16) + (iter % 255);
-		//	output[getIndex()] = (0xFF0000FF << 8) + (iter % 255);
-		//}
-		//else if (iter < max_it)
-		//{
-		//	output[getIndex()] = (0x000000FF << 8) + (iter % 255);
-		//	output[getIndex()] = (0x000000FF << 8) + (iter % 255);
-		//}
-		//else
-		if (iter == max_it)
+
+		iter++;		
+		if (iter < max_it / 2)
 		{
-			output[getIndex()] = 0xFFFFFFFF;
-			break ;
+			output[getIndex()] = (0x000000FF << 16) + (iter % 255);
+			output[getIndex()] = (0xFF0000FF << 8) + (iter % 255);
 		}
-		iter++;
+		else if (iter < max_it)
+		{
+			output[getIndex()] = (0x000000FF << 8) + (iter % 255);
+			output[getIndex()] = (0x000000FF << 8) + (iter % 255);
+		}
+		else
+			output[getIndex()] = 0xFFFFFFFF;
 	}
 }
