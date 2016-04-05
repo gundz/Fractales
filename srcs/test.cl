@@ -28,40 +28,68 @@ getIndex(void)
 	return (getIndexY() * getGridWidth() + getIndexX());
 }
 
+typedef struct			s_fdata
+{
+	float				x;
+	float				y;
+	double				scale;
+	int					max_it;
+}						t_fdata;
+
 __kernel void
-mandelbrot(__global unsigned int *output)
+mandelbrot(__global unsigned int *output, __global t_fdata *input)
 {
 	int					col = getIndexX();
 	int					row = getIndexY();
 	int					width = getGridWidth();
 	int					height = getGridHeight();
 
-	double				c_re = (col - width / 2.0) * 4.0 / width;
-	double				c_im = (row - height / 2.0) * 4.0 / width;
-	double				x = 0;
-	double				y = 0;
-	int					it = 0;
+	t_fdata fdata = *input;
+	double scale = fdata.scale;
+	double ax = fdata.x;
+	double ay = fdata.y;
+	double max_it = fdata.max_it;
+	int iter = 0;
+
+	double				cx = (col - width / 2.0) * scale + ax;
+	double				cy = (row - height / 2.0) * scale * + ay;
+
+	double				x, y;
+	double				zx, zy;
+	double				zx2, zy2;
 	double				x_new;
 
-	int					max_it = 500;
+	zx2 = 0;
+	zy2 = 0;
+	x = 0;
+	y = 0;
 
-	while (x * x + y * y <= 4 && it < max_it)
+
+	while (iter < max_it && (zx2 + zy2) < 4)
 	{
-		x_new = x * x - y * y + c_re;
-		y = 2 * x * y + c_im;
+		x_new = (zx2 - zy2) + cx;
+		y = 2 * x * y + cy;
 		x = x_new;
-		it++;
-		if (it < max_it / 2)
+
+		zx2 = x * x;
+		zy2 = y * y;
+		
+		//if (iter < max_it / 2)
+		//{
+		//	output[getIndex()] = (0x000000FF << 16) + (iter % 255);
+		//	output[getIndex()] = (0xFF0000FF << 8) + (iter % 255);
+		//}
+		//else if (iter < max_it)
+		//{
+		//	output[getIndex()] = (0x000000FF << 8) + (iter % 255);
+		//	output[getIndex()] = (0x000000FF << 8) + (iter % 255);
+		//}
+		//else
+		if (iter == max_it)
 		{
-			output[getIndex()] = (0x000000FF << 16) + (it % 255);
-			output[getIndex()] = (0xFF0000FF << 8) + (it % 255);
-		}
-		else if (it < max_it)
-		{
-			output[getIndex()] = (0x000000FF << 8) + (it % 255);
-			output[getIndex()] = (0x000000FF << 8) + (it % 255);
-		}
-		else
 			output[getIndex()] = 0xFFFFFFFF;
+			break ;
+		}
+		iter++;
 	}
 }

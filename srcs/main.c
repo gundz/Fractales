@@ -12,16 +12,48 @@ typedef struct			s_data
 	t_esdl				*esdl;
 }						t_data;
 
-void
-compute(SDL_Surface *surf, t_cl_data *cl_data)
+typedef struct			s_fdata
 {
+	float				x;
+	float				y;
+	double				scale;
+	int					max_it;
+}						t_fdata;
 
-	// size_t				i, j;	
+void
+compute(t_data *data, SDL_Surface *surf, t_cl_data *cl_data)
+{
+	static t_fdata fdata = {-.6, 0, 1./256, 128};
+
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+	{
+		fdata.max_it *= 1.05;
+
+		fdata.x += (data->esdl->en.in.m_x - RX / 2) * fdata.scale;
+		fdata.y += (data->esdl->en.in.m_y - RY / 2) * fdata.scale;
+
+		if (fdata.scale > fabs(fdata.x) * 1e-16 && fdata.scale > fabs(fdata.y) * 1e-16)
+			fdata.scale /= 2;
+
+		printf("max_it = %d\n", fdata.max_it);
+		data->esdl->en.in.button[SDL_BUTTON_LEFT] = 0;
+	}
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+	{
+		fdata.x += (data->esdl->en.in.m_x - RX / 2) * fdata.scale;
+		fdata.y += (data->esdl->en.in.m_y - RY / 2) * fdata.scale;
+
+		fdata.scale *= 2;
+		data->esdl->en.in.button[SDL_BUTTON_RIGHT] = 0;
+	}
+	
 
 	clSetKernelArg(cl_data->kernel, 0, sizeof(cl_mem), &(cl_data->output));
+	clSetKernelArg(cl_data->kernel, 1, sizeof(cl_mem), &(cl_data->input));
 
-	size_t				global_item_size[2] = {surf->w, surf->h};
-    //size_t				local_item_size[2] = {16, 16};
+	size_t					global_item_size[2] = {surf->w, surf->h};
+
+    clEnqueueWriteBuffer(cl_data->command_queue, cl_data->input, CL_TRUE, 0, sizeof(t_fdata), &fdata, 0, NULL, NULL);
 
 	clEnqueueNDRangeKernel(cl_data->command_queue, cl_data->kernel, 2, NULL, global_item_size, NULL, 0, NULL, NULL);
 
@@ -37,7 +69,7 @@ void					test(t_data *data, t_cl_data *cl_data)
 
 	surf = Esdl_create_surface(RX, RY);
 
-	compute(surf, cl_data);
+	compute(data, surf, cl_data);
 
 	tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, surf);
 	SDL_FreeSurface(surf);
@@ -63,6 +95,8 @@ init(t_cl_data *cl_data)
 
 
 	cl_data->output = clCreateBuffer(cl_data->context, CL_MEM_READ_WRITE, SIZEBITCH, NULL, NULL);
+
+	cl_data->input = clCreateBuffer(cl_data->context, CL_MEM_READ_WRITE, sizeof(t_fdata), NULL, NULL);
 }
 
 int					main(int argc, char **argv)
