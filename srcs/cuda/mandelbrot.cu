@@ -5,7 +5,7 @@ extern "C" {
 }
 
 __global__ void
-my_kernel(int *a, int rx, int ry)
+my_kernel(Uint32 *a, int rx, int ry)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -41,6 +41,7 @@ my_kernel(int *a, int rx, int ry)
 	//use color model conversion to get rainbow palette, make brightness black if maxIterations reached
 	//color = HSVtoRGB(ColorHSV(i % 256, 255, 255 * (i < maxIterations)));
 	//draw the pixel
+	a[dim_i] = 0;
 	if (i < maxIterations)
 		a[dim_i] = 0xFFFFFFFF;
 }
@@ -48,22 +49,15 @@ my_kernel(int *a, int rx, int ry)
 extern "C" void
 mandelbrot(t_data *data, SDL_Surface *surf)
 {
-	static int *a_h = NULL;
-	static int *a_d = NULL;  // Pointer to host & device arrays
+	static Uint32 *a_d = NULL;  // Pointer to host & device arrays
 
-	size_t size = SDL_RX * SDL_RY * sizeof(int);
-
-	if (a_h == NULL)
-		a_h = (int *)malloc(size);        // Allocate array on host
+	size_t size = SDL_RY * SDL_RX * surf->format->BytesPerPixel;
 
 	if (a_d == NULL)
-		cudaMalloc((void **) &a_d, size);   // Allocate array on device
-
-	// Initialize host array and copy it to CUDA device
-	for (int i = 0; i < SDL_RX * SDL_RY; i++)
-		a_h[i] = (int)0;
-	
-	cudaMemcpy(a_d, a_h, size, cudaMemcpyHostToDevice);
+	{
+		cudaMalloc((void **)&a_d, size);   // Allocate array on device
+	}
+	//cudaMemcpy(a_d, surf, size, cudaMemcpyHostToDevice);
 
 	dim3 blockSize(32, 32);
 	int bx = (SDL_RX + blockSize.x - 1) / blockSize.x;
@@ -71,32 +65,20 @@ mandelbrot(t_data *data, SDL_Surface *surf)
 	dim3 gridSize = dim3(bx, by);
 
 	my_kernel <<< gridSize, blockSize >>> (a_d, SDL_RX, SDL_RY);
-
 	cudaThreadSynchronize();
 
+	SDL_LockSurface(surf);	
 	// Retrieve result from device and store it in host array
-	cudaMemcpy(a_h, a_d, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy(surf->pixels, a_d, size, cudaMemcpyDeviceToHost);
+	SDL_UnlockSurface(surf);
 
-	for (int i = 0; i < SDL_RY; i++)
-	{
-		for (int j = 0; j < SDL_RX; j++)
-		{
-			Esdl_put_pixel(surf, j, i, a_h[i * SDL_RX + j]);
-		}
-	}
 
 	//cleanup
 	if (data->esdl->run == 0)
 	{
 		printf("QUIT BITCH !\n");
-		free(a_h);
 		cudaFree(a_d);
 	}
-
-	//my_kernel<<<1,1>>>();
-	//cudaDeviceSynchronize();
-
-
 
 	(void)data;
 	(void)surf;
