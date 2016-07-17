@@ -72,7 +72,7 @@ mandelbrot(t_data *data, SDL_Surface *surf)
 
 	my_kernel <<< gridSize, blockSize >>> (a_d, SDL_RX, SDL_RY);
 
-	//cudaThreadSynchronize();
+	cudaThreadSynchronize();
 
 	// Retrieve result from device and store it in host array
 	cudaMemcpy(a_h, a_d, size, cudaMemcpyDeviceToHost);
