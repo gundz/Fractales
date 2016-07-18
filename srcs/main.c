@@ -5,7 +5,8 @@
 
 void					test(t_data *data)
 {
-	mandelbrot(data);
+	//mandelbrot(data);
+	julia(data);
 
 	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);
 	SDL_RenderClear(data->esdl->en.ren);

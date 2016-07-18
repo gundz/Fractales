@@ -11,4 +11,5 @@ typedef struct			s_data
 }						t_data;
 
 void	mandelbrot(t_data *data);
+void	julia(t_data *data);
 #endif

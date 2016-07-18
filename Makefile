@@ -4,8 +4,10 @@
 
 	#CUDA CONFIG
 	SRCS_NO_CUDA =	mandelbrot.c \
+					julia.c \
 
 	SRCS_CUDA =		mandelbrot.cu \
+					julia.cu \
 
 	NVCC =			/usr/local/cuda/bin/nvcc
 	CUDA_FLAGS =	-L /usr/local/cuda/lib64 -lcudart -lcuda -lstdc++
