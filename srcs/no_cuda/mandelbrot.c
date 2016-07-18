@@ -1,7 +1,7 @@
 #include <header.h>
 
 void
-mandelbrot(t_data *data, SDL_Surface *surf)
+mandelbrot(t_data *data)
 {
 	//each iteration, it calculates: newz = oldz*oldz + p, where p is the current pixel, and oldz stars at the origin
 	double pr, pi;           //real and imaginary part of the pixel p
@@ -37,7 +37,7 @@ mandelbrot(t_data *data, SDL_Surface *surf)
 			//draw the pixel
 
 			if (i < maxIterations)
-				Esdl_put_pixel(surf, x, y, 0xFFFFFFFF);
+				Esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
 		}
 	}
 }

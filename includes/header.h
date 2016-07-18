@@ -6,8 +6,9 @@
 typedef struct			s_data
 {
 	t_esdl				*esdl;
-	SDL_Texture			*screen;
+	SDL_Surface			*surf;
+	SDL_Texture			*tex;
 }						t_data;
 
-void	mandelbrot(t_data *data, SDL_Surface *surf);
+void	mandelbrot(t_data *data);
 #endif

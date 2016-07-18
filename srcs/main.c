@@ -5,37 +5,23 @@
 
 void					test(t_data *data)
 {
-	SDL_Surface			*surf = Esdl_create_surface(SDL_RX, SDL_RY);
-	SDL_Texture			*tex;
+	mandelbrot(data);
 
-	struct timeval stop, start;
-	gettimeofday(&start, NULL);
-	
-	mandelbrot(data, surf);
-
-	gettimeofday(&stop, NULL);
-	printf("took %fs\n", (double)(stop.tv_usec - start.tv_usec) / 1000000000.0);
-
-
-	tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, surf);
-	SDL_FreeSurface(surf);
+	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);
 	SDL_RenderClear(data->esdl->en.ren);
-	SDL_RenderCopy(data->esdl->en.ren, tex, NULL, NULL);
+	SDL_RenderCopy(data->esdl->en.ren, data->tex, NULL, NULL);
 	SDL_RenderPresent(data->esdl->en.ren);
-	SDL_DestroyTexture(tex);
+	SDL_DestroyTexture(data->tex);
 }
 
 void				init(t_data *data)
 {
-	//data->square = SDL_CreateTextureFromSurface(data->esdl->en.ren, surf);
-	//SDL_FreeSurface(surf);
-	(void)data;
+	data->surf = Esdl_create_surface(SDL_RX, SDL_RY);
 }
 
 void				quit(t_data *data)
 {
-	//SDL_DestroyTexture(data->square);
-	(void)data;
+	SDL_FreeSurface(data->surf);
 }
 
 int					main(int argc, char **argv)
@@ -45,7 +31,7 @@ int					main(int argc, char **argv)
 
 	data.esdl = &esdl;
 
-	if (Esdl_init(&esdl, 1024, 768, 120, "Engine") == -1)
+	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
 		return (-1);
 	init(&data);
 	while (esdl.run)
