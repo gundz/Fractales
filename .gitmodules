@@ -1,3 +1,6 @@
 [submodule "ESDL_Lib"]
 	path = ESDL_Lib
 	url = https://github.com/gundz/ESDL_Lib.git
+[submodule "libft"]
+	path = libft
+	url = https://github.com/gundz/libft.git

@@ -37,7 +37,7 @@ julia(t_data *data)
 			//draw the pixel
 
 			if (i < maxIterations)
-				Esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
+				Esdl_put_pixel(data->surf, x, y, 0xFF00FFFF);
 		}
 	}
 }

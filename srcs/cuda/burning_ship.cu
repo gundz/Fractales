@@ -57,7 +57,7 @@ burning_ship(t_data *data)
 	int by = (SDL_RY + blockSize.y - 1) / blockSize.y;
 	dim3 gridSize = dim3(bx, by);
 
-	buddhabrot_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY);
+	burning_ship_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY);
 	cudaThreadSynchronize();
 
 	SDL_LockSurface(data->surf);

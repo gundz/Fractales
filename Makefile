@@ -15,7 +15,7 @@
 	CUDA_FLAGS =	-L /usr/local/cuda/lib64 -lcudart -lcuda -lstdc++
 	#END CUDA CONFIG
 
-	NAME =			a.out
+	NAME =			fractol
 
 	CC =			gcc
 
@@ -31,8 +31,8 @@
 		#TYPE OF BINARY: LIB or PROGRAM
 		TYPE = PROGRAM
 	#LIB that are make with the same makefile
-		LIB_NAMES = -lesdl
-		LIB_PATH =	./ESDL_Lib/
+		LIB_NAMES = -lesdl -lft
+		LIB_PATH =	./ESDL_Lib/ ./libft/
 	#OTHER LIB
 		LIB_SUPP = `sdl2-config --libs` -lm
 		LIB_SUPP_INC = `sdl2-config --cflags`
@@ -94,7 +94,7 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.$(EXTENTION)
 ifeq ($(LIB_PATH), $(EMPTY))
 else
 libs:
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make -C $(lib) > /dev/null ;)
 endif
 
 clean:
@@ -103,7 +103,7 @@ clean:
 #CLEANING SUBLIBS
 ifeq ($(LIB_PATH), $(EMPTY))
 else
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make clean > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make clean -C $(lib) > /dev/null ;)
 endif
 
 fclean: clean
@@ -112,7 +112,7 @@ fclean: clean
 #FCLEANING SUBLIBS
 ifneq ($(LIB_PATH), $(EMPTY))
 else
-	@ $(foreach lib, $(LIB_PATH), cd $(lib) && make fclean > /dev/null ;)
+	@ $(foreach lib, $(LIB_PATH), make fclean -C $(lib) > /dev/null ;)
 endif
 
 re: fclean all

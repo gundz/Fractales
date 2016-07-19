@@ -1,13 +1,16 @@
 #include <easy_sdl.h>
+#include <libft.h>
 #include <header.h>
 #include <sys/time.h>
 
-
 void					test(t_data *data)
 {
-	//mandelbrot(data);
-	//julia(data);
-	burning_ship(data);
+	if (data->fractal == MANDELBROT)
+		mandelbrot(data);
+	if (data->fractal == JULIA)
+		julia(data);
+	if (data->fractal == BURNING_SHIP)
+		burning_ship(data);
 
 	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);
 	SDL_RenderClear(data->esdl->en.ren);
@@ -26,12 +29,35 @@ void				quit(t_data *data)
 	SDL_FreeSurface(data->surf);
 }
 
+int					check_arg(int argc, char **argv, t_data *data)
+{
+	if (argc != 2)
+		return (-1);
+	if (ft_strstr(argv[1], "-mandelbrot"))
+		data->fractal = MANDELBROT;
+	else if (ft_strstr(argv[1], "-julia"))
+		data->fractal = JULIA;
+	else if (ft_strstr(argv[1], "-burning"))
+		data->fractal = BURNING_SHIP;
+	else
+		return (-1);
+	return (0);
+}
+
+int					show_usage(void)
+{
+	ft_putstr("usage: ./fractol -[mandelbrot][julia][burning]\n");
+	return (0);
+}
+
 int					main(int argc, char **argv)
 {
 	t_data			data;
 	t_esdl			esdl;
 
 	data.esdl = &esdl;
+	if (check_arg(argc, argv, &data) == -1)
+		return (show_usage());
 
 	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
 		return (-1);
@@ -41,7 +67,7 @@ int					main(int argc, char **argv)
 	{
 		Esdl_update_events(&esdl.en.in, &esdl.run);
 
-		if (esdl.en.in.button[SDL_BUTTON_LEFT] == 1)
+		if (data.esdl->en.in.button[SDL_BUTTON_LEFT] == 1 || data.fractal == JULIA)
 			test(&data);
 
 		Esdl_fps_limit(&esdl);
