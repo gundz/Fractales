@@ -12,4 +12,5 @@ typedef struct			s_data
 
 void	mandelbrot(t_data *data);
 void	julia(t_data *data);
+void	burning_ship(t_data *data);
 #endif

@@ -6,7 +6,8 @@
 void					test(t_data *data)
 {
 	//mandelbrot(data);
-	julia(data);
+	//julia(data);
+	burning_ship(data);
 
 	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);
 	SDL_RenderClear(data->esdl->en.ren);
@@ -35,11 +36,13 @@ int					main(int argc, char **argv)
 	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
 		return (-1);
 	init(&data);
+	test(&data);
 	while (esdl.run)
 	{
 		Esdl_update_events(&esdl.en.in, &esdl.run);
 
-		test(&data);
+		if (esdl.en.in.button[SDL_BUTTON_LEFT] == 1)
+			test(&data);
 
 		Esdl_fps_limit(&esdl);
 		Esdl_fps_counter(&esdl);

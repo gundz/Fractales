@@ -5,9 +5,11 @@
 	#CUDA CONFIG
 	SRCS_NO_CUDA =	mandelbrot.c \
 					julia.c \
+					burning_ship.c \
 
 	SRCS_CUDA =		mandelbrot.cu \
 					julia.cu \
+					burning_ship.cu \
 
 	NVCC =			/usr/local/cuda/bin/nvcc
 	CUDA_FLAGS =	-L /usr/local/cuda/lib64 -lcudart -lcuda -lstdc++
@@ -32,7 +34,7 @@
 		LIB_NAMES = -lesdl
 		LIB_PATH =	./ESDL_Lib/
 	#OTHER LIB
-		LIB_SUPP = `sdl2-config --libs`
+		LIB_SUPP = `sdl2-config --libs` -lm
 		LIB_SUPP_INC = `sdl2-config --cflags`
 	#TEXT
 		COMPILING_OBJECTS = "\033[4;7mCompiling Objects:\033[0m [$(NAME)]\n"
