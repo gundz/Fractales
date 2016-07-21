@@ -3,6 +3,17 @@
 #include <stdlib.h>
 
 void
+set_palette(int palette[256])
+{
+	for (int n = 0; n < 256; n++)
+	{
+		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
+		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
+	}
+	palette[255] = 0;
+}
+
+void
 burning_ship(t_data *data)
 {
 	float GraphTop = 1.5f;
@@ -19,13 +30,7 @@ burning_ship(t_data *data)
 	float CoordImaginary = GraphTop;
 	float SquaredX, SquaredY;
 	int palette[256];
-
-	for (int n = 0; n < 256; n++)
-	{
-		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
-		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
-	}
-	palette[255] = 0;
+	set_palette(palette);
 
 	for (int y = 0; y < SDL_RY; y++)
 	{
@@ -37,7 +42,7 @@ burning_ship(t_data *data)
 			Zy = CoordImaginary;
 			SquaredX = Zx * Zx;
 			SquaredY = Zy * Zy;
-			do
+			while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0))
 			{
 				Zy = fabs(Zx * Zy);
 				Zy = Zy + Zy - CoordImaginary;
@@ -45,10 +50,8 @@ burning_ship(t_data *data)
 				SquaredX = Zx * Zx;
 				SquaredY = Zy * Zy;
 				i++;
-			} while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0));
-			i--;
-
-			Esdl_put_pixel(data->surf, x, y, palette[i]);
+			}
+			Esdl_put_pixel(data->surf, x, y, palette[i + 1]);
 			CoordReal += incrementX;
 		}
 		CoordImaginary -= DecrementY;
