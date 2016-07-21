@@ -50,6 +50,23 @@ int					show_usage(void)
 	return (0);
 }
 
+int					check_input(t_data *data)
+{
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+		return (1);
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
+		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
+		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
+		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
+		return (1);
+	return (0);
+}
+
 int					main(int argc, char **argv)
 {
 	t_data			data;
@@ -67,7 +84,7 @@ int					main(int argc, char **argv)
 	{
 		Esdl_update_events(&esdl.en.in, &esdl.run);
 
-		if (data.esdl->en.in.button[SDL_BUTTON_LEFT] == 1 || data.fractal == JULIA)
+		if (check_input(&data) || data.fractal == JULIA)
 			test(&data);
 
 		Esdl_fps_limit(&esdl);

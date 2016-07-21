@@ -23,6 +23,33 @@ burning_ship(t_data *data)
 	int i;
 	int max_iteration = 256;
 
+	//ZOOM ZOOM ZINC
+	static float zoom = 0.0f;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+		zoom += 0.1;
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+		zoom -= 0.1;
+	GraphTop -= zoom;
+	GraphBottom += zoom;
+	GraphLeft += zoom;
+	GraphRight -= zoom;
+
+	//MOVE BITCH GET OUT THE WAY
+	static float moveX = 0.0f;
+	static float moveY = 0.0f;
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
+		moveX += 0.1;
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
+		moveX -= 0.1;
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
+		moveY += 0.1;
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
+		moveY -= 0.1;
+	GraphLeft += moveX;
+	GraphRight += moveX;
+	GraphTop += moveY;
+	GraphBottom += moveY;
+
 	float incrementX = ((GraphRight - GraphLeft) / (SDL_RX - 1));
 	float DecrementY = ((GraphTop - GraphBottom) / (SDL_RY - 1));
 	float Zx, Zy;

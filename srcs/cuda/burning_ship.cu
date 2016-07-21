@@ -5,41 +5,66 @@ extern "C" {
 }
 
 __global__ void
-burning_ship_kernel(Uint32 *a, int rx, int ry)
+burning_ship_kernel(Uint32 *a, int rx, int ry, int palette[256])
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 	int dim_i = y * rx + x;
 	if ((x >= rx) || (y >= ry))
 		return ;
-/*
-	double x1 = -2.1;
-	double x2 = 0.6;
-	double y1 = -1.2;
-	double y2 = 1.2;
-	double zoom = 100;
-	int maxIteration = 100;
-	const int img_x = (x2 - x2) * zoom;
-	const int img_y = (y2 - y1) * zoom;
 
-	int pixels[img_y][img_x];
+	float GraphTop = 1.5f;
+	float GraphBottom = -1.5f;
+	float GraphLeft = -2.0f;
+	float GraphRight = 1.5f;
+	int i;
+	int max_iteration = 256;
 
-	double c_r = y / zoom + x1;
-	double c_i = y / zoom + y1;
-	double z_r = 0;
-	double z_i = 0;
-	int i = 0;
-	while (z_r * z_r + z_i * z_i < 4 && i < maxIteration)
+	float incrementX = ((GraphRight - GraphLeft) / (rx - 1));
+	float DecrementY = ((GraphTop - GraphBottom) / (ry - 1));
+	float Zx, Zy;
+	float CoordReal;
+	float CoordImaginary = GraphTop;
+	float SquaredX, SquaredY;
+
+	for (int y = 0; y < ry; y++)
 	{
-		int tmp = z_r;
-		z_r = z_r * z_r - z_i * z_i + c_r;
-		z_i = 2 * z_i * tmp + c_i;
-		i++;
-
+		CoordReal = GraphLeft;
+		for (int x = 0; x < rx; x++)
+		{
+			i = 0;
+			Zx = CoordReal;
+			Zy = CoordImaginary;
+			SquaredX = Zx * Zx;
+			SquaredY = Zy * Zy;
+			do
+			{
+				Zy = fabs(Zx * Zy);
+				Zy = Zy + Zy - CoordImaginary;
+				Zx = SquaredX - SquaredY + CoordReal;
+				SquaredX = Zx * Zx;
+				SquaredY = Zy * Zy;
+				i++;
+			} while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0));
+			i--;
+			a[dim_i] = palette[i];
+			CoordReal += incrementX;
+		}
+		CoordImaginary -= DecrementY;
 	}
-*/
 
-	a[dim_i] = 0;
+
+}
+
+void
+set_palette(int palette[256])
+{
+	for (int n = 0; n < 256; n++)
+	{
+		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
+		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
+	}
+	palette[255] = 0;
 }
 
 extern "C" void
@@ -57,7 +82,9 @@ burning_ship(t_data *data)
 	int by = (SDL_RY + blockSize.y - 1) / blockSize.y;
 	dim3 gridSize = dim3(bx, by);
 
-	burning_ship_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY);
+	int palette[256];
+	set_palette(palette);
+	burning_ship_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY, palette);
 	cudaThreadSynchronize();
 
 	SDL_LockSurface(data->surf);
