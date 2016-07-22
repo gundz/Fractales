@@ -13,6 +13,11 @@ julia_kernel(Uint32 *a, int rx, int ry, int mx, int my)
 	if ((x >= rx) || (y >= ry))
 		return ;
 
+	int palette[256];
+	palette[0] = 0;
+	for (int i = 1; i < 256; i++)
+		palette[i] = (i * 7) % 256 << 24 | (i * 7) % 256 << 16 | 255 << 8 | 255;
+
 	//each iteration, it calculates: new = old*old + c, where c is a constant and old starts at current pixel
 	double cRe, cIm;           //real and imaginary part of the constant c, determinate shape of the Julia Set
 	double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old
@@ -40,18 +45,7 @@ julia_kernel(Uint32 *a, int rx, int ry, int mx, int my)
 		if ((newRe * newRe + newIm * newIm) > 4)
 			break;
 	}
-	a[dim_i] = 0;
-	if (i < maxIterations)
-	{
-		int color = 0;
-		color = (color << 8) + i & 255;
-		color = (color << 8) + 0;
-		color = (color << 8) + 0;
-		color = (color << 8) + 0xFF;
-		a[dim_i] = color;
-	}
-	else if (i % 2 == 0)
-		a[dim_i] = 0xFFFFFFFF;
+	a[dim_i] = palette[(i + 1) % 255];
 }
 
 extern "C" void
@@ -70,7 +64,7 @@ julia(t_data *data)
 	dim3 gridSize = dim3(bx, by);
 
 	julia_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY, data->esdl->en.in.m_x, data->esdl->en.in.m_y);
-	cudaThreadSynchronize();
+	cudaDeviceSynchronize();
 
 	SDL_LockSurface(data->surf);
 	// Retrieve result from device and store it in host array
