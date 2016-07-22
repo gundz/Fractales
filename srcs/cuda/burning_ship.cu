@@ -5,7 +5,7 @@ extern "C" {
 }
 
 __global__ void
-burning_ship_kernel(Uint32 *a, int rx, int ry, int palette[256])
+burning_ship_kernel(Uint32 *a, int rx, int ry)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -27,33 +27,32 @@ burning_ship_kernel(Uint32 *a, int rx, int ry, int palette[256])
 	float CoordImaginary = GraphTop;
 	float SquaredX, SquaredY;
 
-	for (int y = 0; y < ry; y++)
+	int palette[256];
+	for (int n = 0; n < 256; n++)
 	{
-		CoordReal = GraphLeft;
-		for (int x = 0; x < rx; x++)
-		{
-			i = 0;
-			Zx = CoordReal;
-			Zy = CoordImaginary;
-			SquaredX = Zx * Zx;
-			SquaredY = Zy * Zy;
-			do
-			{
-				Zy = fabs(Zx * Zy);
-				Zy = Zy + Zy - CoordImaginary;
-				Zx = SquaredX - SquaredY + CoordReal;
-				SquaredX = Zx * Zx;
-				SquaredY = Zy * Zy;
-				i++;
-			} while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0));
-			i--;
-			a[dim_i] = palette[i];
-			CoordReal += incrementX;
-		}
-		CoordImaginary -= DecrementY;
+		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
+		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
 	}
+	palette[255] = 0;
 
-
+	CoordReal = GraphLeft + (incrementX * x);
+	CoordImaginary = GraphTop - (DecrementY * y);
+	i = 0;
+	Zx = CoordReal;
+	Zy = CoordImaginary;
+	SquaredX = Zx * Zx;
+	SquaredY = Zy * Zy;
+	a[dim_i] = 0;
+	while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0))
+	{
+		Zy = fabs(Zx * Zy);
+		Zy = Zy + Zy - CoordImaginary;
+		Zx = SquaredX - SquaredY + CoordReal;
+		SquaredX = Zx * Zx;
+		SquaredY = Zy * Zy;
+		i++;
+	}
+	a[dim_i] = palette[(i + 1) % 255];
 }
 
 void
@@ -82,9 +81,9 @@ burning_ship(t_data *data)
 	int by = (SDL_RY + blockSize.y - 1) / blockSize.y;
 	dim3 gridSize = dim3(bx, by);
 
-	int palette[256];
-	set_palette(palette);
-	burning_ship_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY, palette);
+	//int palette[256];
+	//set_palette(palette);
+	burning_ship_kernel<<<gridSize, blockSize>>>(a_d, SDL_RX, SDL_RY);
 	cudaThreadSynchronize();
 
 	SDL_LockSurface(data->surf);
