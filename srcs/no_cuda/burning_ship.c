@@ -54,16 +54,17 @@ burning_ship(t_data *data)
 	float DecrementY = ((GraphTop - GraphBottom) / (SDL_RY - 1));
 	float Zx, Zy;
 	float CoordReal;
-	float CoordImaginary = GraphTop;
+	float CoordImaginary;
 	float SquaredX, SquaredY;
 	int palette[256];
 	set_palette(palette);
 
 	for (int y = 0; y < SDL_RY; y++)
 	{
-		CoordReal = GraphLeft;
 		for (int x = 0; x < SDL_RX; x++)
 		{
+			CoordReal = GraphLeft + (incrementX * x);
+			CoordImaginary = GraphTop - (DecrementY * y);
 			i = 0;
 			Zx = CoordReal;
 			Zy = CoordImaginary;
@@ -79,8 +80,6 @@ burning_ship(t_data *data)
 				i++;
 			}
 			Esdl_put_pixel(data->surf, x, y, palette[i + 1]);
-			CoordReal += incrementX;
 		}
-		CoordImaginary -= DecrementY;
 	}
 }

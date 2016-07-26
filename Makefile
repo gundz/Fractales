@@ -7,9 +7,11 @@
 					julia.c \
 					burning_ship.c \
 
-	SRCS_CUDA =		mandelbrot.cu \
+	SRCS_CUDA =		cuda.cu \
+					mandelbrot.cu \
 					julia.cu \
 					burning_ship.cu \
+
 
 	NVCC =			/usr/local/cuda/bin/nvcc
 	CUDA_FLAGS =	-L /usr/local/cuda/lib64 -lcudart -lcuda -lstdc++

@@ -1,7 +1,7 @@
 #ifndef HEADER_H
-#define HEADER_H
+# define HEADER_H
 
-#include <easy_sdl.h>
+# include <easy_sdl.h>
 
 typedef struct			s_data
 {
@@ -16,7 +16,8 @@ typedef enum			e_fractal
 	MANDELBROT, JULIA, BURNING_SHIP
 }						t_fractal;
 
-void	mandelbrot(t_data *data);
-void	julia(t_data *data);
-void	burning_ship(t_data *data);
+void					mandelbrot(t_data *data);
+void					julia(t_data *data);
+void					burning_ship(t_data *data);
+
 #endif
