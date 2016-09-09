@@ -34,32 +34,29 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 		newRe = oldRe * oldRe - oldIm * oldIm + pr;
 		newIm = 2 * oldRe * oldIm + pi;
 		//if the point is outside the circle with radius 2: stop
-		if ((newRe * newRe + newIm * newIm) > 8)
+		if ((newRe * newRe + newIm * newIm) > 4)
 			break;
 	}
-	//use color model conversion to get rainbow palette, make brightness black if maxIterations reached
-	//color = HSVtoRGB(ColorHSV(i % 256, 255, 255 * (i < maxIterations)));
-	//draw the pixel
-	cuda.screen[dim_i] = 0;
-	/*
-	if (i < mandelbrot.maxIteration)
+	cuda.screen[dim_i] = mandelbrot.palette[(i + 1) % 255];
+}
+
+static void
+set_palette(int palette[256])
+{
+	palette[0] = 0;
+	for (int i = 1; i < 256; i++)
 	{
-		int color = 0;
-		color = (color << 8) + i & 255;
-		color = (color << 8) + 0;
-		color = (color << 8) + 0;
-		color = (color << 8) + 0xFF;
-		cuda.screen[dim_i] = color;
+		palette[i] = (int)(i + 512 - 512 * expf(-i / 50.0) / 3.0);
+		palette[i] = palette[i] << 24 | i % 255 << 16 | palette[i] % 255 << 8 | 255;
 	}
-	else if (i % 2 == 0)*/
-	if (i < mandelbrot.maxIteration)
-		cuda.screen[dim_i] = 0xFFFFFFFF;
 }
 
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {{0}, 1, -0.5, 0, 300};
+	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 300, {0}};
+
+	set_palette(mandelbrot.palette);
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;

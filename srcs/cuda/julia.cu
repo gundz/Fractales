@@ -17,18 +17,16 @@ julia_kernel(t_cuda cuda, t_julia julia)
 	//each iteration, it calculates: new = old*old + c, where c is a constant and old starts at current pixel
 	double cRe, cIm;           //real and imaginary part of the constant c, determinate shape of the Julia Set
 	double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old
-	double zoom = 1, moveX = 0, moveY = 0; //you can change these to zoom and change position
-	int maxIterations = 1000; //after how much iterations the function should stop
 
 	//pick some values for the constant c, this determines the shape of the Julia Set
 	cRe = 0.001 * julia.mx;
 	cIm = 0.001 * julia.my;
 	//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-	newRe = 1.5 * (x - cuda.rx / 2) / (0.5 * zoom * cuda.rx) + moveX;
-	newIm = (y - cuda.ry / 2) / (0.5 * zoom * cuda.ry) + moveY;
+	newRe = 1.5 * (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
+	newIm = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.moveY;
 	//i will represent the number of iterations
 	int i;
-	for(i = 0; i < maxIterations; i++)
+	for(i = 0; i < julia.maxIteration; i++)
 	{
 		oldRe = newRe;
 		oldIm = newIm;
@@ -54,10 +52,35 @@ set_palette(int palette[256])
 int
 julia_call(t_data *data, t_cuda *cuda)
 {
-	t_julia		julia;
+	static t_julia julia = {0, 0, 1, 0, 0, 300, {0}};
 	julia.mx = data->esdl->en.in.m_x;
 	julia.my = data->esdl->en.in.m_y;
 	set_palette(julia.palette);
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		julia.moveX -= 0.01 / julia.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		julia.moveX += 0.01 / julia.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		julia.moveY -= 0.01 / julia.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		julia.moveY += 0.01 / julia.zoom * 10;
+
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+		julia.zoom += 0.01 * julia.zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+		julia.zoom -= 0.01 * julia.zoom;
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+	{
+		julia.maxIteration *= 1.1;
+		printf("Max iterations = %d\n", julia.maxIteration);
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && julia.maxIteration > 300)
+	{
+		julia.maxIteration /= 1.1;
+		printf("Max iterations = %d\n", julia.maxIteration);
+	}
 
 	julia_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, julia);
 	return (0);
