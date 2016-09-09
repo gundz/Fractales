@@ -64,6 +64,10 @@ int					check_input(t_data *data)
 		return (1);
 	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
 		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_PLUS) == 1)
+		return (1);
+	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_MINUS) == 1)
+		return (1);
 	return (0);
 }
 
@@ -76,7 +80,7 @@ int					main(int argc, char **argv)
 	if (check_arg(argc, argv, &data) == -1)
 		return (show_usage());
 
-	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
+	if (Esdl_init(&esdl, 1024, 768, 120, "Engine") == -1)
 		return (-1);
 	init(&data);
 	test(&data);
