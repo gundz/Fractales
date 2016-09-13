@@ -44,7 +44,7 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 300, {0}};
+	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 200, {0}};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;
@@ -65,7 +65,7 @@ mandelbrot_call(t_data *data, t_cuda *cuda)
 		mandelbrot.maxIteration *= 1.1;
 		printf("Max iterations = %d\n", mandelbrot.maxIteration);
 	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && mandelbrot.maxIteration > 300)
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && mandelbrot.maxIteration > mandelbrot.maxIteration)
 	{
 		mandelbrot.maxIteration /= 1.1;
 		printf("Max iterations = %d\n", mandelbrot.maxIteration);
