@@ -22,20 +22,29 @@ julia_kernel(t_cuda cuda, t_julia julia)
 	cRe = 0.001 * julia.mx;
 	cIm = 0.001 * julia.my;
 	//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-	newRe = 1.5 * (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
+	newRe = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
 	newIm = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.moveY;
-	//i will represent the number of iterations
-	int i;
-	for(i = 0; i < julia.maxIteration; i++)
+
+	int i = 0;
+	while (i < julia.maxIteration)
 	{
-		oldRe = newRe;
-		oldIm = newIm;
-		newRe = oldRe * oldRe - oldIm * oldIm + cRe;
-		newIm = 2 * oldRe * oldIm + cIm;
-		if ((newRe * newRe + newIm * newIm) > 4)
-			break;
+	    oldRe = newRe;
+	    oldIm = newIm;
+	    newRe = oldRe * oldRe - oldIm * oldIm + cRe;
+	    newIm = 2 * oldRe * oldIm + cIm;
+	    if ((newRe * newRe + newIm * newIm) > 4)
+	    	break ;
+	    i++;
 	}
-	cuda.screen[dim_i] = julia.palette[(i + 1) % 255];
+
+    if(i == julia.maxIteration)
+        cuda.screen[dim_i] = 0x00000000;
+    else
+    {
+        double z = sqrt(newRe * newRe + newIm * newIm);
+        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(julia.maxIteration));
+        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
+    }
 }
 
 static void
