@@ -5,6 +5,13 @@ extern "C"
 #include <cuda.h>
 #include <mandelbrot.h>
 
+__device__ void
+suma(double *ansreal, double *ansimag, double areal, double aimag, double breal, double bimag)
+{
+	*ansreal = areal + breal;
+	*ansimag = aimag + bimag;
+}
+
 __global__ void
 mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 {
@@ -14,24 +21,35 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-	//each iteration, it calculates: newz = oldz*oldz + p, where p is the current pixel, and oldz stars at the origin
-	double cr, ci;           //real and imaginary part of the pixel p
-	double zr, zi;
-	double temp;
+    double pr, pi;                   //real and imaginary part of the pixel p
+    double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old z
 	//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-	cr = 1.5 * (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
-	ci = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
-	zr = zi = 0;
-
-	int i = 0;
-	while ((zr * zr + zi * zi < 4) && i < mandelbrot.maxIteration)
+	pr = 1.5 * (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
+	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
+	newRe = newIm = oldRe = oldIm = 0; //these should start at 0,0
+	//"i" will represent the number of iterations
+	int i;
+	//start the iteration process
+	for(i = 0; i < mandelbrot.maxIteration; i++)
 	{
-		temp = zr * zr - zi * zi + cr;
-		zi = (2 * zr * zi + ci);
-		zr = temp;
-		i++;
+	    //remember value of previous iteration
+	    oldRe = newRe;
+	    oldIm = newIm;
+	    //the actual iteration, the real and imaginary part are calculated
+	    newRe = oldRe * oldRe - oldIm * oldIm + pr;
+	    newIm = 2 * oldRe * oldIm + pi;
+	    //if the point is outside the circle with radius 2: stop
+	    if((newRe * newRe + newIm * newIm) > 4) break;
 	}
-	cuda.screen[dim_i] = (i % 256) << 24 | (i % 256) << 16 | (i % 256) << 8 | 255;
+
+    if(i == mandelbrot.maxIteration)
+        cuda.screen[dim_i] = 0x00000000;
+    else
+    {
+        double z = sqrt(newRe * newRe + newIm * newIm);
+        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(mandelbrot.maxIteration));
+        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
+    }
 }
 
 int
