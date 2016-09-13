@@ -80,7 +80,7 @@ int					main(int argc, char **argv)
 	if (check_arg(argc, argv, &data) == -1)
 		return (show_usage());
 
-	if (Esdl_init(&esdl, 1024, 768, 120, "Engine") == -1)
+	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
 		return (-1);
 	init(&data);
 	test(&data);
