@@ -19,18 +19,15 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 
 	pr = (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
 	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
-	oldRe = 0;
-	oldIm = 0;
+	newRe = newIm = oldRe = oldIm = 0;
 
 	int i = 0;
-	while (i < mandelbrot.maxIteration)
+	while (((newRe * newRe + newIm * newIm) < 4) && i < mandelbrot.maxIteration)
 	{
 	    oldRe = newRe;
 	    oldIm = newIm;
 	    newRe = oldRe * oldRe - oldIm * oldIm + pr;
 	    newIm = 2 * oldRe * oldIm + pi;
-	    if ((newRe * newRe + newIm * newIm) > 4)
-	    	break ;
 	    i++;
 	}
 
