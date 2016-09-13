@@ -5,13 +5,6 @@ extern "C"
 #include <cuda.h>
 #include <mandelbrot.h>
 
-__device__ void
-suma(double *ansreal, double *ansimag, double areal, double aimag, double breal, double bimag)
-{
-	*ansreal = areal + breal;
-	*ansimag = aimag + bimag;
-}
-
 __global__ void
 mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 {
@@ -21,25 +14,20 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-    double pr, pi;                   //real and imaginary part of the pixel p
-    double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old z
-	//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-	pr = 1.5 * (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
+    double pr, pi;
+    double newRe, newIm, oldRe, oldIm;
+
+	pr = (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
 	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
-	newRe = newIm = oldRe = oldIm = 0; //these should start at 0,0
-	//"i" will represent the number of iterations
-	int i;
-	//start the iteration process
-	for(i = 0; i < mandelbrot.maxIteration; i++)
+	newRe = newIm = oldRe = oldIm = 0;
+	int i = 0;
+	while (((newRe * newRe + newIm * newIm) < 4) && i < mandelbrot.maxIteration)
 	{
-	    //remember value of previous iteration
 	    oldRe = newRe;
 	    oldIm = newIm;
-	    //the actual iteration, the real and imaginary part are calculated
 	    newRe = oldRe * oldRe - oldIm * oldIm + pr;
 	    newIm = 2 * oldRe * oldIm + pi;
-	    //if the point is outside the circle with radius 2: stop
-	    if((newRe * newRe + newIm * newIm) > 4) break;
+	    i++;
 	}
 
     if(i == mandelbrot.maxIteration)
@@ -55,8 +43,10 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 300, {0}};
+	static t_mandelbrot	mandelbrot = {0, 0, 1, -0.5, 0, 300, {0}};
 
+	mandelbrot.mx = data->esdl->en.in.m_x;
+	mandelbrot.my = data->esdl->en.in.m_y;
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
