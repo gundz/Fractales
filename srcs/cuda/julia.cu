@@ -47,24 +47,12 @@ julia_kernel(t_cuda cuda, t_julia julia)
     }
 }
 
-static void
-set_palette(int palette[256])
-{
-	palette[0] = 0;
-	for (int i = 1; i < 256; i++)
-	{
-		palette[i] = (int)(i + 512 - 512 * expf(-i / 50.0) / 3.0);
-		palette[i] = palette[i] << 24 | i % 255 << 16 | palette[i] % 255 << 8 | 255;
-	}
-}
-
 int
 julia_call(t_data *data, t_cuda *cuda)
 {
-	static t_julia julia = {0, 0, 1, 0, 0, 300, {0}};
+	static t_julia julia = {0, 0, 1, 0, 0, 300};
 	julia.mx = data->esdl->en.in.m_x;
 	julia.my = data->esdl->en.in.m_y;
-	set_palette(julia.palette);
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		julia.moveX -= 0.01 / julia.zoom * 10;

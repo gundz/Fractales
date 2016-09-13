@@ -44,7 +44,7 @@ tricorn_kernel(t_cuda cuda, t_tricorn tricorn)
 int
 tricorn_call(t_data *data, t_cuda *cuda)
 {
-	static t_tricorn	tricorn = {1, -0.5, 0, 200, {0}};
+	static t_tricorn	tricorn = {1, -0.5, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		tricorn.moveX -= 0.01 / tricorn.zoom * 10;

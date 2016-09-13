@@ -3,7 +3,10 @@
 
 typedef struct	s_burning_ship
 {
-	int			palette[256];
+	double		zoom;
+	double		moveX;
+	double		moveY;
+	int			maxIteration;
 }				t_burning_ship;
 
 #endif

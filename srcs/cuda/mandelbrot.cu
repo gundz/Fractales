@@ -44,7 +44,7 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 200, {0}};
+	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;

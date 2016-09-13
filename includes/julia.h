@@ -9,7 +9,6 @@ typedef struct	s_julia
 	double		moveX;
 	double		moveY;
 	int			maxIteration;
-	int			palette[256];
 }				t_julia;
 
 #endif

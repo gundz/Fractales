@@ -7,7 +7,6 @@ typedef struct	s_tricorn
 	double		moveX;
 	double		moveY;
 	int			maxIteration;
-	int			palette[256];
 }				t_tricorn;
 
 #endif
