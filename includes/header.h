@@ -16,6 +16,10 @@ typedef enum			e_fractal
 	MANDELBROT, JULIA, BURNING_SHIP, TRICORN, SIZE = 4
 }						t_fractal;
 
+int						check_input(t_data *data);
+void					change_fractal(t_data *data);
+void					main_fractal(t_data *data);
+
 void					mandelbrot(t_data *data);
 void					julia(t_data *data);
 void					burning_ship(t_data *data);
