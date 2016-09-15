@@ -7,6 +7,7 @@ typedef struct	s_burning_ship
 	double		moveX;
 	double		moveY;
 	int			maxIteration;
+	int			palette[256];
 }				t_burning_ship;
 
 #endif

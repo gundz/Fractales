@@ -37,6 +37,7 @@ burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
 		i++;
 	}
 
+	/*
     if(i == burning.maxIteration)
         cuda.screen[dim_i] = 0x00000000;
     else
@@ -45,12 +46,27 @@ burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
         int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(burning.maxIteration));
         cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
     }
+    */
+    cuda.screen[dim_i] = burning.palette[(i + 1) % 255];
+}
+
+static void
+set_palette(int palette[256])
+{
+	for (int n = 0; n < 256; n++)
+	{
+		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
+		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
+	}
+	palette[255] = 0;
 }
 
 int
 burning_ship_call(t_data *data, t_cuda *cuda)
 {
-	static t_burning_ship burning = {1, 0, 0, 200};
+	static t_burning_ship burning = {1, 0, 0, 200, {0}};
+
+	set_palette(burning.palette);
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		burning.moveX -= 0.01 / burning.zoom * 10;
