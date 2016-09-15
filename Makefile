@@ -1,20 +1,29 @@
 
 #CONFIG
 	SRCS =			main.c \
+					main_check.c \
+					main_fractal.c \
 
 	#CUDA CONFIG
 	SRCS_NO_CUDA =	mandelbrot.c \
 					julia.c \
 					burning_ship.c \
+					tricorn.c \
 
 	SRCS_CUDA =		cuda.cu \
 					mandelbrot.cu \
 					julia.cu \
 					burning_ship.cu \
+					tricorn.cu \
 
-
+ifeq ($(shell uname), Darwin)
+	NVCC =			nvcc
+	CUDA_FLAGS =	-L /Developer/NVIDIA/CUDA-7.5/lib -lcudart -lstdc++
+else
 	NVCC =			/usr/local/cuda/bin/nvcc
 	CUDA_FLAGS =	-L /usr/local/cuda/lib64 -lcudart -lcuda -lstdc++
+endif
+
 	#END CUDA CONFIG
 
 	NAME =			fractol
