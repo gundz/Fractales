@@ -19,8 +19,10 @@ burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
 	double oldRe, oldIm;
 	int i;
 
-	pr = (x * (cuda.rx / cuda.ry) - cuda.rx * 0.5) * burning.zoom + burning.moveX;
-	pi = (y - cuda.ry * 0.5) * burning.zoom + burning.moveY;
+	// pr = (x * (cuda.rx / cuda.ry) - cuda.rx * 0.5) * burning.zoom + burning.moveX;
+	// pi = (y - cuda.ry * 0.5) * burning.zoom + burning.moveY;
+	pr = (x - cuda.rx / 2) / (0.5 * burning.zoom * cuda.rx) + burning.moveX;
+	pi = (y - cuda.ry / 2) / (0.5 * burning.zoom * cuda.ry) + burning.moveY;
 	oldRe = pr;
 	oldIm = pi;
 	i = 0;
@@ -48,23 +50,32 @@ burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
 int
 burning_ship_call(t_data *data, t_cuda *cuda)
 {
-	static t_burning_ship burning = {0.004, 0, 0, 100};
+	static t_burning_ship burning = {1, 0, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		burning.moveX -= 0.0001 / burning.zoom;
+		burning.moveX -= 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		burning.moveX += 0.0001 / burning.zoom;
+		burning.moveX += 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		burning.moveY -= 0.0001 / burning.zoom;
+		burning.moveY -= 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		burning.moveY += 0.0001 /  burning.zoom;
+		burning.moveY += 0.01 / burning.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		burning.zoom += 0.01 * burning.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		burning.zoom -= 0.01 * burning.zoom;
 
-	printf("%f\n", burning.zoom);
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+	{
+		burning.maxIteration *= 1.1;
+		printf("Max iterations = %d\n", burning.maxIteration);
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+	{
+		burning.maxIteration *= 0.9;
+		printf("Max iterations = %d\n", burning.maxIteration);
+	}
 
 	burning_ship_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, burning);
 	return (0);

@@ -65,9 +65,9 @@ tricorn_call(t_data *data, t_cuda *cuda)
 		tricorn.maxIteration *= 1.1;
 		printf("Max iterations = %d\n", tricorn.maxIteration);
 	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && tricorn.maxIteration > tricorn.maxIteration)
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		tricorn.maxIteration /= 1.1;
+		tricorn.maxIteration *= 0.9;
 		printf("Max iterations = %d\n", tricorn.maxIteration);
 	}
 

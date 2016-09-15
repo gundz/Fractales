@@ -65,9 +65,9 @@ mandelbrot_call(t_data *data, t_cuda *cuda)
 		mandelbrot.maxIteration *= 1.1;
 		printf("Max iterations = %d\n", mandelbrot.maxIteration);
 	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && mandelbrot.maxIteration > mandelbrot.maxIteration)
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		mandelbrot.maxIteration /= 1.1;
+		mandelbrot.maxIteration *= 0.9;
 		printf("Max iterations = %d\n", mandelbrot.maxIteration);
 	}
 

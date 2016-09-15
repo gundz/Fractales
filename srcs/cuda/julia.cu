@@ -73,9 +73,9 @@ julia_call(t_data *data, t_cuda *cuda)
 		julia.maxIteration *= 1.1;
 		printf("Max iterations = %d\n", julia.maxIteration);
 	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1 && julia.maxIteration > 300)
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		julia.maxIteration /= 1.1;
+		julia.maxIteration *= 0.9;
 		printf("Max iterations = %d\n", julia.maxIteration);
 	}
 
