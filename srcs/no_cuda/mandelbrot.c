@@ -1,43 +1,90 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mandelbrot.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/09/15 18:23:52 by fgundlac          #+#    #+#             */
+/*   Updated: 2016/09/15 18:23:53 by fgundlac         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <header.h>
+#include <mandelbrot.h>
 
-void
-mandelbrot(t_data *data)
+int				mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
 {
-	//each iteration, it calculates: newz = oldz*oldz + p, where p is the current pixel, and oldz stars at the origin
-	double pr, pi;           //real and imaginary part of the pixel p
-	double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old z
-	double zoom = 1, moveX = -0.5, moveY = 0; //you can change these to zoom and change position
-	int maxIterations = 300;//after how much iterations the function should stop
+	double		z;
+	int			brightness;
 
-	for (int y = 0; y < SDL_RY; y++)
+	z = sqrt(new_re * new_re + new_im * new_im);
+	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
+	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
+}
+
+void			mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
+{
+	double		pr;
+	double		pi;
+	double		new_re;
+	double		new_im;
+	double		old_re;
+	double		old_im;
+	int			i;
+
+	pr = (x - SDL_RX / 2) / (0.5 * mandelbrot.zoom * SDL_RX) + mandelbrot.moveX;
+	pi = (y - SDL_RY / 2) / (0.5 * mandelbrot.zoom * SDL_RY) + mandelbrot.moveY;
+	new_re = new_im = old_re = old_im = 0;
+	i = 0;
+	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxIteration)
 	{
-		for (int x = 0; x < SDL_RX; x++)
-		{
-			//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-			pr = 1.5 * (x - SDL_RX / 2) / (0.5 * zoom * SDL_RX) + moveX;
-			pi = (y - SDL_RY / 2) / (0.5 * zoom * SDL_RY) + moveY;
-			newRe = newIm = oldRe = oldIm = 0; //these should start at 0,0
-			//"i" will represent the number of iterations
-			int i;
-			//start the iteration process
-			for(i = 0; i < maxIterations; i++)
-			{
-				//remember value of previous iteration
-				oldRe = newRe;
-				oldIm = newIm;
-				//the actual iteration, the real and imaginary part are calculated
-				newRe = oldRe * oldRe - oldIm * oldIm + pr;
-				newIm = 2 * oldRe * oldIm + pi;
-				//if the point is outside the circle with radius 2: stop
-				if ((newRe * newRe + newIm * newIm) > 4)
-					break;
-			}
-			//use color model conversion to get rainbow palette, make brightness black if maxIterations reached
-			//color = HSVtoRGB(ColorHSV(i % 256, 255, 255 * (i < maxIterations)));
-			//draw the pixel
+		old_re = new_re;
+		old_im = new_im;
+		new_re = old_re * old_re - old_im * old_im + pr;
+		new_im = 2 * old_re * old_im + pi;
+		i++;
+	}
+	Esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration));
+}
 
-			if (i < maxIterations)
-				Esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
+void			mandelbrot(t_data *data)
+{
+	int					x;
+	int					y;
+	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 100};
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		mandelbrot.moveX += 0.01 / mandelbrot.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		mandelbrot.moveY -= 0.01 / mandelbrot.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		mandelbrot.moveY += 0.01 / mandelbrot.zoom * 10;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+		mandelbrot.zoom += 0.01 * mandelbrot.zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+		mandelbrot.zoom -= 0.01 * mandelbrot.zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+	{
+		mandelbrot.maxIteration *= 1.1;
+		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+	{
+		mandelbrot.maxIteration *= 0.9;
+		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+	}
+	y = 0;
+	while (y < SDL_RY)
+	{
+		x = 0;
+		while (x < SDL_RX)
+		{
+			mandelbrot_kernel(data, mandelbrot, x, y);
+			x++;
 		}
+		y++;
 	}
 }

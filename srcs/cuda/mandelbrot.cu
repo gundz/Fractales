@@ -5,6 +5,17 @@ extern "C"
 #include <cuda.h>
 #include <mandelbrot.h>
 
+__device__ int
+mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
+{
+	double		z;
+	int			brightness;
+
+	z = sqrt(new_re * new_re + new_im * new_im);
+	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
+	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
+}
+
 __global__ void
 mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 {
@@ -14,31 +25,27 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-    double pr, pi;
-    double newRe, newIm, oldRe, oldIm;
+	double		pr;
+	double		pi;
+	double		new_re;
+	double		new_im;
+	double		old_re;
+	double		old_im;
+	int			i;
 
 	pr = (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
 	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
-	newRe = newIm = oldRe = oldIm = 0;
-
-	int i = 0;
-	while (((newRe * newRe + newIm * newIm) < 4) && i < mandelbrot.maxIteration)
+	new_re = new_im = old_re = old_im = 0;
+	i = 0;
+	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxIteration)
 	{
-	    oldRe = newRe;
-	    oldIm = newIm;
-	    newRe = oldRe * oldRe - oldIm * oldIm + pr;
-	    newIm = 2 * oldRe * oldIm + pi;
-	    i++;
+		old_re = new_re;
+		old_im = new_im;
+		new_re = old_re * old_re - old_im * old_im + pr;
+		new_im = 2 * old_re * old_im + pi;
+		i++;
 	}
-
-    if(i == mandelbrot.maxIteration)
-        cuda.screen[dim_i] = 0x00000000;
-    else
-    {
-        double z = sqrt(newRe * newRe + newIm * newIm);
-        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(mandelbrot.maxIteration));
-        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
-    }
+	cuda.screen[dim_i] = mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration);
 }
 
 int
@@ -56,9 +63,9 @@ mandelbrot_call(t_data *data, t_cuda *cuda)
 		mandelbrot.moveY += 0.01 / mandelbrot.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		mandelbrot.zoom += 0.01 * mandelbrot.zoom;
+		mandelbrot.zoom += 0.05 * mandelbrot.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		mandelbrot.zoom -= 0.01 * mandelbrot.zoom;
+		mandelbrot.zoom -= 0.05 * mandelbrot.zoom;
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
