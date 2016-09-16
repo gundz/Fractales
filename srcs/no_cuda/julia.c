@@ -46,7 +46,7 @@ void				julia_kernel(t_data *data, t_julia julia, int x, int y)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	Esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxIteration));
+	esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxIteration));
 }
 
 void				julia(t_data *data)

@@ -16,7 +16,7 @@
 
 void				init(t_data *data)
 {
-	data->surf = Esdl_create_surface(SDL_RX, SDL_RY);
+	data->surf = esdl_create_surface(SDL_RX, SDL_RY);
 }
 
 void				quit(t_data *data)
@@ -32,20 +32,20 @@ int					main(int argc, char **argv)
 	data.esdl = &esdl;
 	if (check_arg(argc, argv, &data) == -1)
 		return (show_usage());
-	if (Esdl_init(&esdl, 640, 480, 120, "Engine") == -1)
+	if (esdl_init(&esdl, 640, 480, "Engine") == -1)
 		return (-1);
 	init(&data);
 	main_fractal(&data);
 	while (esdl.run)
 	{
 		change_fractal(&data);
-		Esdl_update_events(&esdl.en.in, &esdl.run);
+		esdl_update_events(&esdl.en.in, &esdl.run);
 		if (check_input(&data) || data.fractal == JULIA)
 			main_fractal(&data);
-		Esdl_fps_limit(&esdl);
-		Esdl_fps_counter(&esdl);
+		esdl_fps_limit(&esdl);
+		esdl_fps_counter(&esdl);
 	}
 	quit(&data);
-	Esdl_quit(&esdl);
+	esdl_quit(&esdl);
 	return (0);
 }

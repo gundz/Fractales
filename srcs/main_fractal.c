@@ -18,21 +18,21 @@ int					check_input(t_data *data)
 		return (1);
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_PLUS) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_PLUS) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_MINUS) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_MINUS) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_Q) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_Q) == 1)
 		return (1);
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_W) == 1)
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_W) == 1)
 		return (1);
 	return (0);
 }

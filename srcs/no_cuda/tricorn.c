@@ -45,7 +45,7 @@ void					tricorn_kernel(t_data *data, t_tricorn tricorn, int x, int y)
 		new_im = -(2 * old_re * old_im + pi);
 		i++;
 	}
-	Esdl_put_pixel(data->surf, x, y, tricorn_color(new_re, new_im, i, tricorn.maxIteration));
+	esdl_put_pixel(data->surf, x, y, tricorn_color(new_re, new_im, i, tricorn.maxIteration));
 }
 
 void					tricorn(t_data *data)

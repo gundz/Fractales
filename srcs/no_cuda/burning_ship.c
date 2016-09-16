@@ -45,7 +45,7 @@ void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
 		old_im = new_im;
 		i++;
 	}
-	Esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxIteration));
+	esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxIteration));
 }
 
 void					burning_ship(t_data *data)

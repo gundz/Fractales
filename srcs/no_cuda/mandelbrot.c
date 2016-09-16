@@ -45,7 +45,7 @@ void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	Esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration));
+	esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration));
 }
 
 void					mandelbrot(t_data *data)
