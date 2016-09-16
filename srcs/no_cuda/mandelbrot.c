@@ -5,33 +5,33 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/15 18:23:52 by fgundlac          #+#    #+#             */
-/*   Updated: 2016/09/15 18:23:53 by fgundlac         ###   ########.fr       */
+/*   Created: 2016/09/16 15:28:52 by fgundlac          #+#    #+#             */
+/*   Updated: 2016/09/16 15:28:54 by fgundlac         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <header.h>
 #include <mandelbrot.h>
 
-int				mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
+int						mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
 {
-	double		z;
-	int			brightness;
+	double				z;
+	int					brightness;
 
 	z = sqrt(new_re * new_re + new_im * new_im);
 	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
 	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
 }
 
-void			mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
+void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 {
-	double		pr;
-	double		pi;
-	double		new_re;
-	double		new_im;
-	double		old_re;
-	double		old_im;
-	int			i;
+	double				pr;
+	double				pi;
+	double				new_re;
+	double				new_im;
+	double				old_re;
+	double				old_im;
+	int					i;
 
 	pr = (x - SDL_RX / 2) / (0.5 * mandelbrot.zoom * SDL_RX) + mandelbrot.moveX;
 	pi = (y - SDL_RY / 2) / (0.5 * mandelbrot.zoom * SDL_RY) + mandelbrot.moveY;
@@ -48,7 +48,7 @@ void			mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 	Esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration));
 }
 
-void			mandelbrot(t_data *data)
+void					mandelbrot(t_data *data)
 {
 	int					x;
 	int					y;

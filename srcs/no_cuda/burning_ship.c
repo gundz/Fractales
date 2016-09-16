@@ -1,85 +1,90 @@
-#include <header.h>
-#include <math.h>
-#include <stdlib.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   burning_ship.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/09/16 15:29:21 by fgundlac          #+#    #+#             */
+/*   Updated: 2016/09/16 15:29:22 by fgundlac         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void
-set_palette(int palette[256])
+#include <header.h>
+#include <burning_ship.h>
+
+int						burning_ship_color(double new_re, double new_im, int i, int max_iteration)
 {
-	for (int n = 0; n < 256; n++)
-	{
-		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
-		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
-	}
-	palette[255] = 0;
+	double				z;
+	int					brightness;
+
+	z = sqrt(new_re * new_re + new_im * new_im);
+	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
+	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
 }
 
-void
-burning_ship(t_data *data)
+void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
 {
-	float GraphTop = 1.5f;
-	float GraphBottom = -1.5f;
-	float GraphLeft = -2.0f;
-	float GraphRight = 1.5f;
-	int i;
-	int max_iteration = 256;
+	double				pr;
+	double				pi;
+	double				new_re;
+	double				new_im;
+	double				old_re;
+	double				old_im;
+	int					i;
 
-	//ZOOM ZOOM ZINC
-	static float zoom = 0.0f;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		zoom += 0.1;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		zoom -= 0.1;
-	GraphTop -= zoom;
-	GraphBottom += zoom;
-	GraphLeft += zoom;
-	GraphRight -= zoom;
-
-	//MOVE BITCH GET OUT THE WAY
-	static float moveX = 0.0f;
-	static float moveY = 0.0f;
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
-		moveX += 0.1;
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
-		moveX -= 0.1;
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
-		moveY += 0.1;
-	if (Esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
-		moveY -= 0.1;
-	GraphLeft += moveX;
-	GraphRight += moveX;
-	GraphTop += moveY;
-	GraphBottom += moveY;
-
-	float incrementX = ((GraphRight - GraphLeft) / (SDL_RX - 1));
-	float DecrementY = ((GraphTop - GraphBottom) / (SDL_RY - 1));
-	float Zx, Zy;
-	float CoordReal;
-	float CoordImaginary;
-	float SquaredX, SquaredY;
-	int palette[256];
-	set_palette(palette);
-
-	for (int y = 0; y < SDL_RY; y++)
+	pr = (x - SDL_RX / 2) / (0.5 * burning.zoom * SDL_RX) + burning.moveX;
+	pi = (y - SDL_RY / 2) / (0.5 * burning.zoom * SDL_RY) + burning.moveY;
+	new_re = new_im = old_re = old_im = 0;
+	i = 0;
+	while (((new_re * new_re + new_im * new_im) < 4) && i < burning.maxIteration)
 	{
-		for (int x = 0; x < SDL_RX; x++)
+		new_re = (old_re * old_re - old_im * old_im) + pr;
+		new_im = (fabs(old_re * old_im) * 2) + pi;
+		old_re = new_re;
+		old_im = new_im;
+		i++;
+	}
+	Esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxIteration));
+}
+
+void					burning_ship(t_data *data)
+{
+	int					x;
+	int					y;
+	static t_burning	burning = {1, 0, 0, 50};
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		burning.moveX -= 0.01 / burning.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		burning.moveX += 0.01 / burning.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		burning.moveY -= 0.01 / burning.zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		burning.moveY += 0.01 / burning.zoom * 10;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+		burning.zoom += 0.01 * burning.zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+		burning.zoom -= 0.01 * burning.zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+	{
+		burning.maxIteration *= 1.1;
+		printf("Max iterations = %d\n", burning.maxIteration);
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+	{
+		burning.maxIteration *= 0.9;
+		printf("Max iterations = %d\n", burning.maxIteration);
+	}
+	y = 0;
+	while (y < SDL_RY)
+	{
+		x = 0;
+		while (x < SDL_RX)
 		{
-			CoordReal = GraphLeft + (incrementX * x);
-			CoordImaginary = GraphTop - (DecrementY * y);
-			i = 0;
-			Zx = CoordReal;
-			Zy = CoordImaginary;
-			SquaredX = Zx * Zx;
-			SquaredY = Zy * Zy;
-			while ((i < max_iteration) && ((SquaredX + SquaredY) < 4.0))
-			{
-				Zy = fabs(Zx * Zy);
-				Zy = Zy + Zy - CoordImaginary;
-				Zx = SquaredX - SquaredY + CoordReal;
-				SquaredX = Zx * Zx;
-				SquaredY = Zy * Zy;
-				i++;
-			}
-			Esdl_put_pixel(data->surf, x, y, palette[i + 1]);
+			burning_ship_kernel(data, burning, x, y);
+			x++;
 		}
+		y++;
 	}
 }

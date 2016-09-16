@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    burning_ship.cu                                    :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2016/09/16 15:35:36 by fgundlac          #+#    #+#              #
+#    Updated: 2016/09/16 15:35:38 by fgundlac         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 extern "C"
 {
 #include <header.h>
@@ -5,8 +17,19 @@ extern "C"
 #include <cuda.h>
 #include <burning_ship.h>
 
+__device__ int
+burning_ship_color(double new_re, double new_im, int i, int max_iteration)
+{
+	double		z;
+	int			brightness;
+
+	z = sqrt(new_re * new_re + new_im * new_im);
+	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
+	return (brightness << 24 | brightness << 16 | brightness << 8 | 255);
+}
+
 __global__ void
-burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
+burning_ship_kernel(t_cuda cuda, t_burning burning)
 {
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -14,59 +37,33 @@ burning_ship_kernel(t_cuda cuda, t_burning_ship burning)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-	double pr, pi;
-	double newRe, newIm;
-	double oldRe, oldIm;
-	int i;
+	double		pr;
+	double		pi;
+	double		new_re;
+	double		new_im;
+	double		old_re;
+	double		old_im;
+	int			i;
 
-	// pr = (x * (cuda.rx / cuda.ry) - cuda.rx * 0.5) * burning.zoom + burning.moveX;
-	// pi = (y - cuda.ry * 0.5) * burning.zoom + burning.moveY;
 	pr = (x - cuda.rx / 2) / (0.5 * burning.zoom * cuda.rx) + burning.moveX;
 	pi = (y - cuda.ry / 2) / (0.5 * burning.zoom * cuda.ry) + burning.moveY;
-	oldRe = pr;
-	oldIm = pi;
+	new_re = new_im = old_re = old_im = 0;
 	i = 0;
-	while (i < burning.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < burning.maxIteration)
 	{
-		newRe = (oldRe * oldRe - oldIm * oldIm) + pr;
-		newIm = (fabs(oldRe * oldIm) * 2) + pi;
-		if ((newRe * newRe + newIm * newIm) > 4)
-			break ;
-		oldRe = newRe;
-		oldIm = newIm;
+		new_re = (old_re * old_re - old_im * old_im) + pr;
+		new_im = (fabs(old_re * old_im) * 2) + pi;
+		old_re = new_re;
+		old_im = new_im;
 		i++;
 	}
-
-	/*
-    if(i == burning.maxIteration)
-        cuda.screen[dim_i] = 0x00000000;
-    else
-    {
-        double z = sqrt(newRe * newRe + newIm * newIm);
-        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(burning.maxIteration));
-        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
-    }
-    */
-    cuda.screen[dim_i] = burning.palette[(i + 1) % 255];
-}
-
-static void
-set_palette(int palette[256])
-{
-	for (int n = 0; n < 256; n++)
-	{
-		palette[n] = (int)(n + 512 - 512 * expf(-n / 50.0) / 3.0);
-		palette[n] = palette[n] << 24 | palette[n] << 16 | palette[n] << 8 | 255;
-	}
-	palette[255] = 0;
+	cuda.screen[dim_i] = burning_ship_color(new_re, new_im, i, burning.maxIteration);
 }
 
 int
-burning_ship_call(t_data *data, t_cuda *cuda)
+burning_call(t_data *data, t_cuda *cuda)
 {
-	static t_burning_ship burning = {1, 0, 0, 200, {0}};
-
-	set_palette(burning.palette);
+	static t_burning	burning = {1, 0, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
 		burning.moveX -= 0.01 / burning.zoom * 10;
@@ -78,9 +75,9 @@ burning_ship_call(t_data *data, t_cuda *cuda)
 		burning.moveY += 0.01 / burning.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		burning.zoom += 0.01 * burning.zoom;
+		burning.zoom += 0.05 * burning.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		burning.zoom -= 0.01 * burning.zoom;
+		burning.zoom -= 0.05 * burning.zoom;
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
@@ -93,6 +90,7 @@ burning_ship_call(t_data *data, t_cuda *cuda)
 		printf("Max iterations = %d\n", burning.maxIteration);
 	}
 
+
 	burning_ship_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, burning);
 	return (0);
 }
@@ -100,5 +98,5 @@ burning_ship_call(t_data *data, t_cuda *cuda)
 void
 burning_ship(t_data *data)
 {
-	do_cuda(data, &burning_ship_call);
+	do_cuda(data, &burning_call);
 }
