@@ -5,6 +5,17 @@ extern "C"
 #include <cuda.h>
 #include <julia.h>
 
+__device__ int
+julia_color(double new_re, double new_im, int i, int max_iteration)
+{
+	double			z;
+	int				brightness;
+
+	z = sqrt(new_re * new_re + new_im * new_im);
+	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
+	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
+}
+
 __global__ void
 julia_kernel(t_cuda cuda, t_julia julia)
 {
@@ -14,37 +25,28 @@ julia_kernel(t_cuda cuda, t_julia julia)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-	//each iteration, it calculates: new = old*old + c, where c is a constant and old starts at current pixel
-	double cRe, cIm;           //real and imaginary part of the constant c, determinate shape of the Julia Set
-	double newRe, newIm, oldRe, oldIm;   //real and imaginary parts of new and old
+   	double			pr;
+	double			pi;
+	double			new_re;
+	double			new_im;
+	double			old_re;
+	double			old_im;
+	int				i;
 
-	//pick some values for the constant c, this determines the shape of the Julia Set
-	cRe = 0.001 * julia.mx;
-	cIm = 0.001 * julia.my;
-	//calculate the initial real and imaginary part of z, based on the pixel location and zoom and position values
-	newRe = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
-	newIm = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.moveY;
-
-	int i = 0;
-	while (i < julia.maxIteration)
+	pr = 0.001 * julia.mx;
+	pi = 0.001 * julia.my;
+	new_re = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
+	new_im = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.moveY;
+	i = 0;
+	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxIteration)
 	{
-	    oldRe = newRe;
-	    oldIm = newIm;
-	    newRe = oldRe * oldRe - oldIm * oldIm + cRe;
-	    newIm = 2 * oldRe * oldIm + cIm;
-	    if ((newRe * newRe + newIm * newIm) > 4)
-	    	break ;
-	    i++;
+		old_re = new_re;
+		old_im = new_im;
+		new_re = old_re * old_re - old_im * old_im + pr;
+		new_im = 2 * old_re * old_im + pi;
+		i++;
 	}
-
-    if(i == julia.maxIteration)
-        cuda.screen[dim_i] = 0x00000000;
-    else
-    {
-        double z = sqrt(newRe * newRe + newIm * newIm);
-        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(julia.maxIteration));
-        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
-    }
+	cuda.screen[dim_i] = julia_color(new_re, new_im, i, julia.maxIteration);
 }
 
 int
