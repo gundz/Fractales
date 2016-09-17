@@ -85,7 +85,7 @@ mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 		mandelbrot->maxiteration *= 1.1;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 		mandelbrot->maxiteration *= 0.9;
-	printf("Max Iterations: %d\n", mandelbrot->maxiteration);
+	printf("Max Iterations: %f\n", mandelbrot->maxiteration);
 }
 
 int
