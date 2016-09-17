@@ -18,7 +18,7 @@ typedef struct	s_mandelbrot
 	double		zoom;
 	double		movex;
 	double		movey;
-	int			maxiteration;
+	double		maxiteration;
 }				t_mandelbrot;
 
 #endif
