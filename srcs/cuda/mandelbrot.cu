@@ -45,11 +45,11 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	double		old_im;
 	int			i;
 
-	pr = (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.moveX;
-	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.moveY;
+	pr = (x - cuda.rx / 2) / (0.5 * mandelbrot.zoom * cuda.rx) + mandelbrot.movex;
+	pi = (y - cuda.ry / 2) / (0.5 * mandelbrot.zoom * cuda.ry) + mandelbrot.movey;
 	new_re = new_im = old_re = old_im = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxiteration)
 	{
 		old_re = new_re;
 		old_im = new_im;
@@ -57,7 +57,7 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	cuda.screen[dim_i] = mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration);
+	cuda.screen[dim_i] = mandelbrot_color(new_re, new_im, i, mandelbrot.maxiteration);
 }
 
 int
@@ -66,13 +66,13 @@ mandelbrot_call(t_data *data, t_cuda *cuda)
 	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movex -= 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		mandelbrot.moveX += 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movex += 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		mandelbrot.moveY -= 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movey -= 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		mandelbrot.moveY += 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movey += 0.01 / mandelbrot.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		mandelbrot.zoom += 0.05 * mandelbrot.zoom;
@@ -81,17 +81,17 @@ mandelbrot_call(t_data *data, t_cuda *cuda)
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		mandelbrot.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+		mandelbrot.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", mandelbrot.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		mandelbrot.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+		mandelbrot.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", mandelbrot.maxiteration);
 	}
 
 
-	mandelbrot_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, mandelbrot);
+	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, mandelbrot);
 	return (0);
 }
 

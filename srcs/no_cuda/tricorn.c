@@ -33,11 +33,11 @@ void					tricorn_kernel(t_data *data, t_tricorn tricorn, int x, int y)
 	double				old_im;
 	int					i;
 
-	pr = (x - SDL_RX / 2) / (0.5 * tricorn.zoom * SDL_RX) + tricorn.moveX;
-	pi = (y - SDL_RY / 2) / (0.5 * tricorn.zoom * SDL_RY) + tricorn.moveY;
+	pr = (x - SDL_RX / 2) / (0.5 * tricorn.zoom * SDL_RX) + tricorn.movex;
+	pi = (y - SDL_RY / 2) / (0.5 * tricorn.zoom * SDL_RY) + tricorn.movey;
 	new_re = new_im = old_re = old_im = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < tricorn.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < tricorn.maxiteration)
 	{
 		old_re = new_re;
 		old_im = new_im;
@@ -45,7 +45,7 @@ void					tricorn_kernel(t_data *data, t_tricorn tricorn, int x, int y)
 		new_im = -(2 * old_re * old_im + pi);
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, tricorn_color(new_re, new_im, i, tricorn.maxIteration));
+	esdl_put_pixel(data->surf, x, y, tricorn_color(new_re, new_im, i, tricorn.maxiteration));
 }
 
 void					tricorn(t_data *data)
@@ -55,26 +55,26 @@ void					tricorn(t_data *data)
 	static t_tricorn	tricorn = {1, -0.5, 0, 100};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		tricorn.moveX -= 0.01 / tricorn.zoom * 10;
+		tricorn.movex -= 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		tricorn.moveX += 0.01 / tricorn.zoom * 10;
+		tricorn.movex += 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		tricorn.moveY -= 0.01 / tricorn.zoom * 10;
+		tricorn.movey -= 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		tricorn.moveY += 0.01 / tricorn.zoom * 10;
+		tricorn.movey += 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		tricorn.zoom += 0.01 * tricorn.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		tricorn.zoom -= 0.01 * tricorn.zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		tricorn.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", tricorn.maxIteration);
+		tricorn.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", tricorn.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		tricorn.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", tricorn.maxIteration);
+		tricorn.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", tricorn.maxiteration);
 	}
 	y = 0;
 	while (y < SDL_RY)

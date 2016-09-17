@@ -35,10 +35,10 @@ void				julia_kernel(t_data *data, t_julia julia, int x, int y)
 
 	pr = 0.001 * julia.mx;
 	pi = 0.001 * julia.my;
-	new_re = (x - SDL_RX / 2) / (0.5 * julia.zoom * SDL_RX) + julia.moveX;
-	new_im = (y - SDL_RY / 2) / (0.5 * julia.zoom * SDL_RY) + julia.moveY;
+	new_re = (x - SDL_RX / 2) / (0.5 * julia.zoom * SDL_RX) + julia.movex;
+	new_im = (y - SDL_RY / 2) / (0.5 * julia.zoom * SDL_RY) + julia.movey;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxiteration)
 	{
 		old_re = new_re;
 		old_im = new_im;
@@ -46,7 +46,7 @@ void				julia_kernel(t_data *data, t_julia julia, int x, int y)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxIteration));
+	esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxiteration));
 }
 
 void				julia(t_data *data)
@@ -58,26 +58,26 @@ void				julia(t_data *data)
 	julia.mx = data->esdl->en.in.m_x;
 	julia.my = data->esdl->en.in.m_y;
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		julia.moveX -= 0.01 / julia.zoom * 10;
+		julia.movex -= 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		julia.moveX += 0.01 / julia.zoom * 10;
+		julia.movex += 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		julia.moveY -= 0.01 / julia.zoom * 10;
+		julia.movey -= 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		julia.moveY += 0.01 / julia.zoom * 10;
+		julia.movey += 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		julia.zoom += 0.01 * julia.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		julia.zoom -= 0.01 * julia.zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		julia.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", julia.maxIteration);
+		julia.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", julia.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		julia.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", julia.maxIteration);
+		julia.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", julia.maxiteration);
 	}
 	y = 0;
 	while (y < SDL_RY)

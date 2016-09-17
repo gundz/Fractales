@@ -28,10 +28,10 @@ do_cuda(t_data *data, int (*f)(t_data *, t_cuda *))
 	if (cuda.screen == NULL)
 	{
 		cudaMalloc((void **)&cuda.screen, size);
-		cuda.blockSize = dim3(32, 32);
-		cuda.bx = (SDL_RX + cuda.blockSize.x - 1) / cuda.blockSize.x;
-		cuda.by = (SDL_RY + cuda.blockSize.y - 1) / cuda.blockSize.y;
-		cuda.gridSize = dim3(cuda.bx, cuda.by);
+		cuda.blocksize = dim3(32, 32);
+		cuda.bx = (SDL_RX + cuda.blocksize.x - 1) / cuda.blocksize.x;
+		cuda.by = (SDL_RY + cuda.blocksize.y - 1) / cuda.blocksize.y;
+		cuda.gridsize = dim3(cuda.bx, cuda.by);
 		cuda.rx = SDL_RX;
 		cuda.ry = SDL_RY;
 	}

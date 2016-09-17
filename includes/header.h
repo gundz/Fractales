@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   header.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/09/17 16:00:29 by fgundlac          #+#    #+#             */
+/*   Updated: 2016/09/17 16:00:30 by fgundlac         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HEADER_H
 # define HEADER_H
 
@@ -27,6 +39,5 @@ void					tricorn(t_data *data);
 
 int						check_arg(int argc, char **argv, t_data *data);
 int						show_usage(void);
-
 
 #endif

@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cuda.h                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/09/17 15:59:32 by fgundlac          #+#    #+#             */
+/*   Updated: 2016/09/17 15:59:33 by fgundlac         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUDA_H
 # define CUDA_H
 
 typedef struct	s_cuda
 {
-	Uint32		*screen; //screen pointer
-	int			rx; //size x of screen
-	int			ry; //size y of screen
-	dim3		blockSize;
-	dim3		gridSize; //CUDA gridSize
+	Uint32		*screen;
+	int			rx;
+	int			ry;
+	dim3		blocksize;
+	dim3		gridsize;
 	int			bx;
 	int			by;
 }				t_cuda;

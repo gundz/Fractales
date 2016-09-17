@@ -33,11 +33,11 @@ void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
 	double				old_im;
 	int					i;
 
-	pr = (x - SDL_RX / 2) / (0.5 * burning.zoom * SDL_RX) + burning.moveX;
-	pi = (y - SDL_RY / 2) / (0.5 * burning.zoom * SDL_RY) + burning.moveY;
+	pr = (x - SDL_RX / 2) / (0.5 * burning.zoom * SDL_RX) + burning.movex;
+	pi = (y - SDL_RY / 2) / (0.5 * burning.zoom * SDL_RY) + burning.movey;
 	new_re = new_im = old_re = old_im = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < burning.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < burning.maxiteration)
 	{
 		new_re = (old_re * old_re - old_im * old_im) + pr;
 		new_im = (fabs(old_re * old_im) * 2) + pi;
@@ -45,7 +45,7 @@ void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
 		old_im = new_im;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxIteration));
+	esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxiteration));
 }
 
 void					burning_ship(t_data *data)
@@ -55,26 +55,26 @@ void					burning_ship(t_data *data)
 	static t_burning	burning = {1, 0, 0, 50};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		burning.moveX -= 0.01 / burning.zoom * 10;
+		burning.movex -= 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		burning.moveX += 0.01 / burning.zoom * 10;
+		burning.movex += 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		burning.moveY -= 0.01 / burning.zoom * 10;
+		burning.movey -= 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		burning.moveY += 0.01 / burning.zoom * 10;
+		burning.movey += 0.01 / burning.zoom * 10;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		burning.zoom += 0.01 * burning.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		burning.zoom -= 0.01 * burning.zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		burning.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", burning.maxIteration);
+		burning.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", burning.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		burning.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", burning.maxIteration);
+		burning.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", burning.maxiteration);
 	}
 	y = 0;
 	while (y < SDL_RY)

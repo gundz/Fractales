@@ -33,11 +33,11 @@ void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 	double				old_im;
 	int					i;
 
-	pr = (x - SDL_RX / 2) / (0.5 * mandelbrot.zoom * SDL_RX) + mandelbrot.moveX;
-	pi = (y - SDL_RY / 2) / (0.5 * mandelbrot.zoom * SDL_RY) + mandelbrot.moveY;
+	pr = (x - SDL_RX / 2) / (0.5 * mandelbrot.zoom * SDL_RX) + mandelbrot.movex;
+	pi = (y - SDL_RY / 2) / (0.5 * mandelbrot.zoom * SDL_RY) + mandelbrot.movey;
 	new_re = new_im = old_re = old_im = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxiteration)
 	{
 		old_re = new_re;
 		old_im = new_im;
@@ -45,7 +45,7 @@ void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxIteration));
+	esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxiteration));
 }
 
 void					mandelbrot(t_data *data)
@@ -55,26 +55,26 @@ void					mandelbrot(t_data *data)
 	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 100};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		mandelbrot.moveX -= 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movex -= 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		mandelbrot.moveX += 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movex += 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		mandelbrot.moveY -= 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movey -= 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		mandelbrot.moveY += 0.01 / mandelbrot.zoom * 10;
+		mandelbrot.movey += 0.01 / mandelbrot.zoom * 10;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		mandelbrot.zoom += 0.01 * mandelbrot.zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 		mandelbrot.zoom -= 0.01 * mandelbrot.zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		mandelbrot.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+		mandelbrot.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", mandelbrot.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		mandelbrot.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", mandelbrot.maxIteration);
+		mandelbrot.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", mandelbrot.maxiteration);
 	}
 	y = 0;
 	while (y < SDL_RY)

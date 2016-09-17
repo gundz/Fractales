@@ -11,5 +11,5 @@
 /* ************************************************************************** */
 
 /*
-THIS EMPTY FILE IS NEEDED FOR COMPILATION
+** THIS EMPTY FILE IS NEEDED FOR COMPILATION
 */

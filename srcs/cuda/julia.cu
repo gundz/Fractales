@@ -47,10 +47,10 @@ julia_kernel(t_cuda cuda, t_julia julia)
 
 	pr = 0.001 * julia.mx;
 	pi = 0.001 * julia.my;
-	new_re = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.moveX;
-	new_im = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.moveY;
+	new_re = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.movex;
+	new_im = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.movey;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxIteration)
+	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxiteration)
 	{
 		old_re = new_re;
 		old_im = new_im;
@@ -58,7 +58,7 @@ julia_kernel(t_cuda cuda, t_julia julia)
 		new_im = 2 * old_re * old_im + pi;
 		i++;
 	}
-	cuda.screen[dim_i] = julia_color(new_re, new_im, i, julia.maxIteration);
+	cuda.screen[dim_i] = julia_color(new_re, new_im, i, julia.maxiteration);
 }
 
 int
@@ -69,13 +69,13 @@ julia_call(t_data *data, t_cuda *cuda)
 	julia.my = data->esdl->en.in.m_y;
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		julia.moveX -= 0.01 / julia.zoom * 10;
+		julia.movex -= 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		julia.moveX += 0.01 / julia.zoom * 10;
+		julia.movex += 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		julia.moveY -= 0.01 / julia.zoom * 10;
+		julia.movey -= 0.01 / julia.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		julia.moveY += 0.01 / julia.zoom * 10;
+		julia.movey += 0.01 / julia.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		julia.zoom += 0.01 * julia.zoom;
@@ -84,16 +84,16 @@ julia_call(t_data *data, t_cuda *cuda)
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		julia.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", julia.maxIteration);
+		julia.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", julia.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		julia.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", julia.maxIteration);
+		julia.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", julia.maxiteration);
 	}
 
-	julia_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, julia);
+	julia_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, julia);
 	return (0);
 }
 

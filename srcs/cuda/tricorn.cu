@@ -29,12 +29,12 @@ tricorn_kernel(t_cuda cuda, t_tricorn tricorn)
     double pr, pi;
     double newRe, newIm, oldRe, oldIm;
 
-	pr = (x - cuda.rx / 2) / (0.5 * tricorn.zoom * cuda.rx) + tricorn.moveX;
-	pi = (y - cuda.ry / 2) / (0.5 * tricorn.zoom * cuda.ry) + tricorn.moveY;
+	pr = (x - cuda.rx / 2) / (0.5 * tricorn.zoom * cuda.rx) + tricorn.movex;
+	pi = (y - cuda.ry / 2) / (0.5 * tricorn.zoom * cuda.ry) + tricorn.movey;
 	newRe = newIm = oldRe = oldIm = 0;
 
 	int i = 0;
-	while (((newRe * newRe + newIm * newIm) < 4) && i < tricorn.maxIteration)
+	while (((newRe * newRe + newIm * newIm) < 4) && i < tricorn.maxiteration)
 	{
 	    oldRe = newRe;
 	    oldIm = newIm;
@@ -43,12 +43,12 @@ tricorn_kernel(t_cuda cuda, t_tricorn tricorn)
 	    i++;
 	}
 
-    if(i == tricorn.maxIteration)
+    if(i == tricorn.maxiteration)
         cuda.screen[dim_i] = 0x00000000;
     else
     {
         double z = sqrt(newRe * newRe + newIm * newIm);
-        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(tricorn.maxIteration));
+        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(tricorn.maxiteration));
         cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
     }
 }
@@ -59,13 +59,13 @@ tricorn_call(t_data *data, t_cuda *cuda)
 	static t_tricorn	tricorn = {1, -0.5, 0, 200};
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		tricorn.moveX -= 0.01 / tricorn.zoom * 10;
+		tricorn.movex -= 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		tricorn.moveX += 0.01 / tricorn.zoom * 10;
+		tricorn.movex += 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		tricorn.moveY -= 0.01 / tricorn.zoom * 10;
+		tricorn.movey -= 0.01 / tricorn.zoom * 10;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		tricorn.moveY += 0.01 / tricorn.zoom * 10;
+		tricorn.movey += 0.01 / tricorn.zoom * 10;
 
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 		tricorn.zoom += 0.01 * tricorn.zoom;
@@ -74,17 +74,17 @@ tricorn_call(t_data *data, t_cuda *cuda)
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 	{
-		tricorn.maxIteration *= 1.1;
-		printf("Max iterations = %d\n", tricorn.maxIteration);
+		tricorn.maxiteration *= 1.1;
+		printf("Max iterations = %d\n", tricorn.maxiteration);
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
 	{
-		tricorn.maxIteration *= 0.9;
-		printf("Max iterations = %d\n", tricorn.maxIteration);
+		tricorn.maxiteration *= 0.9;
+		printf("Max iterations = %d\n", tricorn.maxiteration);
 	}
 
 
-	tricorn_kernel<<<cuda->gridSize, cuda->blockSize>>>(*cuda, tricorn);
+	tricorn_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, tricorn);
 	return (0);
 }
 
