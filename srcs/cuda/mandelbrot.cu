@@ -97,7 +97,7 @@ mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {1, 0, 0, 200, 300};
+	static t_mandelbrot	mandelbrot = {0.5, -0.5, 0, 200, 300};
 
 	mandelbrot_input(data, &mandelbrot);
 	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, mandelbrot);
