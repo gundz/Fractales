@@ -15,13 +15,11 @@
 
 typedef struct	s_mandelbrot
 {
-	double		x1;
-	double		x2;
-	double		y1;
-	double		y2;
-	double		zoomx;
-	double		zoomy;
+	double		zoom;
+	double		movex;
+	double		movey;
 	double		maxiteration;
+	int			caca;
 }				t_mandelbrot;
 
 #endif

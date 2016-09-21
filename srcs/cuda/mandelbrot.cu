@@ -16,7 +16,6 @@ extern "C"
 }
 #include <cuda.h>
 #include <mandelbrot.h>
-#include <stdlib.h>
 
 __device__ int
 mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
@@ -24,110 +23,83 @@ mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
 	double		z;
 	int			brightness;
 
-	z = sqrt(new_re * new_re + new_im * new_im);
-	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | (i * 255) / (max_iteration % 255) << 16 | i % 255 << 8 | 255);
+	//z = sqrt(new_re * new_re + new_im * new_im);
+	(void)z;
+	brightness = 256. * log2(1.75 + i - log2(log2((double)(max_iteration / 3)))) / log2((double)(max_iteration));
+	return (brightness << 24 | (i % 255)  << 16 | brightness << 8 | 255);
 }
 
 __global__ void
 mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 {
-	int x = blockIdx.x * blockDim.x + threadIdx.x;
-	int y = blockIdx.y * blockDim.y + threadIdx.y;
-	int dim_i = y * cuda.rx + x;
+	const int x = blockIdx.x * blockDim.x + threadIdx.x;
+	const int y = blockIdx.y * blockDim.y + threadIdx.y;
+	const int dim_i = y * cuda.rx + x;
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-	const double c_r = x / mandelbrot.zoomx + mandelbrot.x1;
-	const double c_i = y / mandelbrot.zoomy + mandelbrot.y1;
-	double z_r = 0;
-	double z_i = 0;
-	double tmp;
+	double		pr;
+	double		pi;
+	double		zx;
+	double		zy;
+	double		zx2;
+	double		zy2;
 	int			i;
 
+	pr = (x - cuda.rx / 2) / (mandelbrot.zoom * cuda.rx) + mandelbrot.movex;
+	pi = (y - cuda.ry / 2) / (mandelbrot.zoom * cuda.ry) + mandelbrot.movey;
+
+	zx = zy = zx2 = zy2 = 0;
 	i = 0;
-	while (((z_r * z_r + z_i * z_i) < 4) && i < mandelbrot.maxiteration)
+	while ((zx2 + zy2 < 4) && i < mandelbrot.maxiteration)
 	{
-	    tmp = z_r;
-	    z_r = z_r * z_r - z_i * z_i + c_r;
-	    z_i = 2 * z_i * tmp + c_i;
-	    i++;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		i++;
 	}
 	if (i == mandelbrot.maxiteration)
 		cuda.screen[dim_i] = 0xFFFFFFFF;
 	else
-		cuda.screen[dim_i] = mandelbrot_color(z_r, z_i, i, mandelbrot.maxiteration);
+		cuda.screen[dim_i] = i * 255 / mandelbrot.caca << 24 | (i % 255)  << 16 | 127 << 8 | 255;
 }
 
-t_mandelbrot
-mandelbrot_zoomin(t_data *data, t_mandelbrot mandelbrot)
+void
+mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 {
-	t_mandelbrot new_mandelbrot;
-
-	new_mandelbrot.zoomx = mandelbrot.zoomx * 2;
-	new_mandelbrot.zoomy = mandelbrot.zoomy * 2;
-
-	double X = mandelbrot.x1 + data->esdl->en.in.m_x * (mandelbrot.x2 - mandelbrot.x1) / SDL_RX;
-	double Y = mandelbrot.y1 + data->esdl->en.in.m_y * (mandelbrot.y2 - mandelbrot.y1) / SDL_RY;
-
-	new_mandelbrot.x1 = X - (mandelbrot.x2 - mandelbrot.x1) / 4;
-	new_mandelbrot.x2 = X + (mandelbrot.x2 - mandelbrot.x1) / 4;
-	new_mandelbrot.y1 = Y - (mandelbrot.y2 - mandelbrot.y1) / 4;
-	new_mandelbrot.y2 = Y + (mandelbrot.y2 - mandelbrot.y1) / 4;
-
-	if (mandelbrot.maxiteration < 8000)
-		new_mandelbrot.maxiteration = mandelbrot.maxiteration * 1.1;
-	else
-		new_mandelbrot.maxiteration = mandelbrot.maxiteration;
-
-	return (new_mandelbrot);
-}
-
-t_mandelbrot
-mandelbrot_zoomout(t_data *data, t_mandelbrot mandelbrot)
-{
-	t_mandelbrot new_mandelbrot;
-
-	new_mandelbrot.zoomx = mandelbrot.zoomx / 2;
-	new_mandelbrot.zoomy = mandelbrot.zoomy / 2;
-
-	double X = mandelbrot.x1 + data->esdl->en.in.m_x * (mandelbrot.x2 - mandelbrot.x1) / SDL_RX;
-	double Y = mandelbrot.y1 + data->esdl->en.in.m_y * (mandelbrot.y2 - mandelbrot.y1) / SDL_RY;
-
-	new_mandelbrot.x1 = X - (mandelbrot.x2 - mandelbrot.x1);
-	new_mandelbrot.x2 = X + (mandelbrot.x2 - mandelbrot.x1);
-	new_mandelbrot.y1 = Y - (mandelbrot.y2 - mandelbrot.y1);
-	new_mandelbrot.y2 = Y + (mandelbrot.y2 - mandelbrot.y1);
-
-	if (mandelbrot.maxiteration > 200)
-		new_mandelbrot.maxiteration = mandelbrot.maxiteration * 0.9;
-	else
-		new_mandelbrot.maxiteration = mandelbrot.maxiteration;
-	return (new_mandelbrot);
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		mandelbrot->movex -= 0.01 / mandelbrot->zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		mandelbrot->movex += 0.01 / mandelbrot->zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		mandelbrot->movey -= 0.01 / mandelbrot->zoom * 10;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		mandelbrot->movey += 0.01 / mandelbrot->zoom * 10;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+	{
+		mandelbrot->zoom += 0.05 * mandelbrot->zoom;
+		mandelbrot->maxiteration *= 1.0050;
+		printf("Max Iteration = %d\n", (int)mandelbrot->maxiteration);
+	}
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+	{
+		mandelbrot->zoom -= 0.05 * mandelbrot->zoom;
+		mandelbrot->maxiteration *= 0.9950;
+		printf("Max Iteration = %d\n", (int)mandelbrot->maxiteration);
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+		mandelbrot->maxiteration *= 1.1;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+		mandelbrot->maxiteration *= 0.9;
 }
 
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {
-		-2.1, 0.6, -1.2, 1.2,
-		SDL_RX / (0.6 - (-2.1)),
-		SDL_RY / (1.2 - (-1.2)),
-		200
-		};
+	static t_mandelbrot	mandelbrot = {1, 0, 0, 200, 300};
 
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-	{
-		mandelbrot = mandelbrot_zoomin(data, mandelbrot);
-		data->esdl->en.in.button[SDL_BUTTON_LEFT] = 0;
-	}
-
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-	{
-		mandelbrot = mandelbrot_zoomout(data, mandelbrot);
-		data->esdl->en.in.button[SDL_BUTTON_RIGHT] = 0;
-	}
-
+	mandelbrot_input(data, &mandelbrot);
 	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, mandelbrot);
 	return (0);
 }
