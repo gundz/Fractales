@@ -34,6 +34,10 @@ int					check_input(t_data *data)
 		return (1);
 	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_W) == 1)
 		return (1);
+	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_P) == 1)
+	{
+		write_tga("test.tga", data->surf->pixels, SDL_RX, SDL_RY);
+	}
 	return (0);
 }
 
