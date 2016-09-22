@@ -38,55 +38,62 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-	double		pr;
-	double		pi;
-	double		zx;
-	double		zy;
-	double		zx2;
-	double		zy2;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
 	int			i;
 
-	pr = (x - cuda.rx / 2) / (mandelbrot.zoom * cuda.rx) + mandelbrot.movex;
-	pi = (y - cuda.ry / 2) / (mandelbrot.zoom * cuda.ry) + mandelbrot.movey;
-
-	zx = zy = zx2 = zy2 = 0;
+	pr = mandelbrot.cx + (x - cuda.rx / 2) * mandelbrot.zoom + mandelbrot.movex;
+	pi = mandelbrot.cy + (y - cuda.ry / 2) * mandelbrot.zoom + mandelbrot.movey;
+	zx = 0;
+	zy = 0;
 	i = 0;
-	while ((zx2 + zy2 < 4) && i < mandelbrot.maxiteration)
+	while (i < mandelbrot.maxiteration)
 	{
-		zy = 2 * zx * zy + pi;
-		zx = zx2 - zy2 + pr;
 		zx2 = zx * zx;
 		zy2 = zy * zy;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
 	if (i == mandelbrot.maxiteration)
-		cuda.screen[dim_i] = 0xFFFFFFFF;
+		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
 	else
-		cuda.screen[dim_i] = i * 255 / mandelbrot.caca << 24 | (i % 255)  << 16 | 127 << 8 | 255;
+		esdl_put_pixel(data->surf, x, y, i * 255 / mandelbrot.caca << 24 | (i % 255)  << 16 | 255 << 8 | 255);
 }
 
 void
 mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 {
+	mandelbrot->oldcx = mandelbrot->cx;
+	mandelbrot->oldcy = mandelbrot->cy;
+
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		mandelbrot->movex -= 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movex -= 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		mandelbrot->movex += 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movex += 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		mandelbrot->movey -= 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movey -= 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		mandelbrot->movey += 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movey += 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 	{
-		mandelbrot->zoom += 0.05 * mandelbrot->zoom;
-		mandelbrot->maxiteration *= 1.0050;
-		printf("Max Iteration = %d\n", (int)mandelbrot->maxiteration);
+		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
+		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
+
+		mandelbrot->zoom = mandelbrot->zoom / 1.1;
+		mandelbrot->maxiteration *= 1.0025;
+		data->esdl->en.in.button[SDL_BUTTON_LEFT] = 0;
 	}
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 	{
-		mandelbrot->zoom -= 0.05 * mandelbrot->zoom;
-		mandelbrot->maxiteration *= 0.9950;
-		printf("Max Iteration = %d\n", (int)mandelbrot->maxiteration);
+		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
+		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
+
+		mandelbrot->zoom = mandelbrot->zoom * 1.1;
+		mandelbrot->maxiteration *= 0.9975;
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
 		mandelbrot->maxiteration *= 1.1;
@@ -97,7 +104,9 @@ mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {0.5, -0.5, 0, 200, 300};
+	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 200, 300, 0, 0, 0, 0, 0, 0};
+	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
 
 	mandelbrot_input(data, &mandelbrot);
 	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, mandelbrot);

@@ -25,47 +25,60 @@ int						mandelbrot_color(double new_re, double new_im, int i, int max_iteration
 
 void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 {
-	double				pr;
-	double				pi;
-	double				new_re;
-	double				new_im;
-	double				old_re;
-	double				old_im;
-	int					i;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
+	int			i;
 
-	pr = (x - SDL_RX / 2) / (0.5 * mandelbrot.zoom * SDL_RX) + mandelbrot.movex;
-	pi = (y - SDL_RY / 2) / (0.5 * mandelbrot.zoom * SDL_RY) + mandelbrot.movey;
-	new_re = new_im = old_re = old_im = 0;
+	pr = mandelbrot.cx + (x - SDL_RX / 2) * mandelbrot.zoom + mandelbrot.movex;
+	pi = mandelbrot.cy + (y - SDL_RY / 2) * mandelbrot.zoom + mandelbrot.movey;
+	zx = 0;
+	zy = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < mandelbrot.maxiteration)
+	while (i < mandelbrot.maxiteration)
 	{
-		old_re = new_re;
-		old_im = new_im;
-		new_re = old_re * old_re - old_im * old_im + pr;
-		new_im = 2 * old_re * old_im + pi;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, mandelbrot_color(new_re, new_im, i, mandelbrot.maxiteration));
+	if (i == mandelbrot.maxiteration)
+		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
+	else
+		esdl_put_pixel(data->surf, x, y, i * 255 / mandelbrot.caca << 24 | (i % 255)  << 16 | 255 << 8 | 255);
 }
 
 void					mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 {
+	mandelbrot->oldcx = mandelbrot->cx;
+	mandelbrot->oldcy = mandelbrot->cy;
+
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		mandelbrot->movex -= 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movex -= 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		mandelbrot->movex += 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movex += 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		mandelbrot->movey -= 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movey -= 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		mandelbrot->movey += 0.01 / mandelbrot->zoom * 10;
+		mandelbrot->movey += 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 	{
-		mandelbrot->zoom += 0.05 * mandelbrot->zoom;
+		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
+		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
+
+		mandelbrot->zoom = mandelbrot->zoom / 1.1;
 		mandelbrot->maxiteration *= 1.0025;
+		data->esdl->en.in.button[SDL_BUTTON_LEFT] = 0;
 	}
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 	{
-		mandelbrot->zoom -= 0.05 * mandelbrot->zoom;
+		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
+		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
+
+		mandelbrot->zoom = mandelbrot->zoom * 1.1;
 		mandelbrot->maxiteration *= 0.9975;
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
@@ -78,7 +91,9 @@ void					mandelbrot(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_mandelbrot	mandelbrot = {1, -0.5, 0, 100};
+	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 200, 300, 0, 0, 0, 0, 0, 0};
+	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
 
 	mandelbrot_input(data, &mandelbrot);
 	y = 0;

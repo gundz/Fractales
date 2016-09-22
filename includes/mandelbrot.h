@@ -20,6 +20,12 @@ typedef struct	s_mandelbrot
 	double		movey;
 	double		maxiteration;
 	int			caca;
+	double		cx;
+	double		cy;
+	double		oldcx;
+	double		oldcy;
+	int			mx;
+	int			my;
 }				t_mandelbrot;
 
 #endif
