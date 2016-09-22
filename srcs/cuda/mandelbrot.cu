@@ -101,10 +101,10 @@ mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 int
 mandelbrot_call(t_data *data, t_cuda *cuda)
 {
-	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+	static t_mandelbrot	mandelbrot = {(2.5 / SDL_RY), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+
 	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
-
 	mandelbrot_input(data, &mandelbrot);
 	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, mandelbrot);
 	return (0);

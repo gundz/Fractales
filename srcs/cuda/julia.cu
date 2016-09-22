@@ -37,62 +37,74 @@ julia_kernel(t_cuda cuda, t_julia julia)
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-   	double			pr;
-	double			pi;
-	double			new_re;
-	double			new_im;
-	double			old_re;
-	double			old_im;
-	int				i;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
+	int			i;
 
-	pr = 0.001 * julia.mx;
-	pi = 0.001 * julia.my;
-	new_re = (x - cuda.rx / 2) / (0.5 * julia.zoom * cuda.rx) + julia.movex;
-	new_im = (y - cuda.ry / 2) / (0.5 * julia.zoom * cuda.ry) + julia.movey;
+	pr = 0.003 * julia.mx;
+	pi = 0.003 * julia.my;
+	zx = julia.cx + (x - cuda.rx / 2) * julia.zoom + julia.movex;
+	zy = julia.cy + (y - cuda.ry / 2) * julia.zoom + julia.movey;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxiteration)
+	while (i < julia.maxiteration)
 	{
-		old_re = new_re;
-		old_im = new_im;
-		new_re = old_re * old_re - old_im * old_im + pr;
-		new_im = 2 * old_re * old_im + pi;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
-	cuda.screen[dim_i] = julia_color(new_re, new_im, i, julia.maxiteration);
+	if (i == julia.maxiteration)
+		cuda.screen[dim_i] = 0xFFFFFFFF;
+	else
+		cuda.screen[dim_i] = (int)(i * 255 / julia.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255;
+}
+
+void
+julia_input(t_data *data, t_julia *julia)
+{
+	julia->oldcx = julia->cx;
+	julia->oldcy = julia->cy;
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		julia->movex -= 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		julia->movex += 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		julia->movey -= 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		julia->movey += 0.0001 / julia->zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+	{
+		julia->zoom = julia->zoom / 1.05;
+		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
+		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
+		julia->maxiteration *= 1.0025;
+	}
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+	{
+		julia->zoom = julia->zoom * 1.05;
+		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
+		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
+		julia->maxiteration *= 0.9975;
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+		julia->maxiteration *= 1.1;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+		julia->maxiteration *= 0.9;
 }
 
 int
 julia_call(t_data *data, t_cuda *cuda)
 {
-	static t_julia julia = {0, 0, 1, 0, 0, 300};
-	julia.mx = data->esdl->en.in.m_x;
-	julia.my = data->esdl->en.in.m_y;
+	static t_julia julia = {(2.5 / SDL_RY), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		julia.movex -= 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		julia.movex += 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		julia.movey -= 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		julia.movey += 0.01 / julia.zoom * 10;
-
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		julia.zoom += 0.01 * julia.zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		julia.zoom -= 0.01 * julia.zoom;
-
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-	{
-		julia.maxiteration *= 1.1;
-		printf("Max iterations = %d\n", julia.maxiteration);
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-	{
-		julia.maxiteration *= 0.9;
-		printf("Max iterations = %d\n", julia.maxiteration);
-	}
-
+	julia.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	julia.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	julia_input(data, &julia);
 	julia_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, julia);
 	return (0);
 }

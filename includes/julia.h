@@ -15,12 +15,16 @@
 
 typedef struct	s_julia
 {
-	int			mx;
-	int			my;
 	double		zoom;
+	double		cx;
+	double		cy;
+	double		maxiteration;
 	double		movex;
 	double		movey;
-	int			maxiteration;
+	double		oldcx;
+	double		oldcy;
+	int			mx;
+	int			my;
 }				t_julia;
 
 #endif
