@@ -11,55 +11,33 @@
 /* ************************************************************************** */
 
 #include <header.h>
+#include <libft.h>
 
-int					check_input(t_data *data)
+int				change_fractal(t_data *data)
 {
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		return (1);
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_LEFT) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_RIGHT) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_UP) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_DOWN) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_PLUS) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_KP_MINUS) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_Q) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_W) == 1)
-		return (1);
-	if (esdl_check_input(&data->esdl->en.in, SDL_SCANCODE_P) == 1)
-	{
-		write_tga("test.tga", data->surf->pixels, SDL_RX, SDL_RY);
-	}
-	return (0);
-}
+	int			ret;
 
-void				change_fractal(t_data *data)
-{
+	ret = 0;
 	if (data->esdl->en.in.key[SDL_SCANCODE_Q] == 1)
 	{
 		data->fractal--;
 		data->esdl->en.in.key[SDL_SCANCODE_Q] = 0;
+		ret++;
 	}
 	else if (data->esdl->en.in.key[SDL_SCANCODE_W] == 1)
 	{
 		data->fractal++;
 		data->esdl->en.in.key[SDL_SCANCODE_W] = 0;
+		ret++;
 	}
 	if (data->fractal >= SIZE)
 		data->fractal = 0;
 	else if (data->fractal < 0)
 		data->fractal = SIZE;
+	return (ret);
 }
 
-void				main_fractal(t_data *data)
+void			main_fractal(t_data *data)
 {
 	if (data->fractal == MANDELBROT)
 		mandelbrot(data);

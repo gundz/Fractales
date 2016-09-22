@@ -29,7 +29,7 @@ typedef enum			e_fractal
 }						t_fractal;
 
 int						check_input(t_data *data);
-void					change_fractal(t_data *data);
+int						change_fractal(t_data *data);
 void					main_fractal(t_data *data);
 
 void					mandelbrot(t_data *data);

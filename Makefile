@@ -3,6 +3,7 @@
 	SRCS =			main.c \
 					main_check.c \
 					main_fractal.c \
+					input.c \
 
 	#CUDA CONFIG
 	SRCS_NO_CUDA =	mandelbrot.c \

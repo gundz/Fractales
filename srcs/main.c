@@ -32,15 +32,15 @@ int					main(int argc, char **argv)
 	data.esdl = &esdl;
 	if (check_arg(argc, argv, &data) == -1)
 		return (show_usage());
-	if (esdl_init(&esdl, 640, 480, "Engine") == -1)
+	if (esdl_init(&esdl, 640, 480, "Fractol") == -1)
 		return (-1);
 	init(&data);
 	main_fractal(&data);
 	while (esdl.run)
 	{
-		change_fractal(&data);
 		esdl_update_events(&esdl.en.in, &esdl.run);
-		if (check_input(&data) || data.fractal == JULIA)
+		if (check_input(&data) > 0 || change_fractal(&data) > 0 \
+			|| data.fractal == JULIA)
 			main_fractal(&data);
 		esdl_fps_limit(&esdl);
 		esdl_fps_counter(&esdl);
