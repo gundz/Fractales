@@ -91,7 +91,7 @@ void					mandelbrot(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 200, 300, 0, 0, 0, 0, 0, 0};
+	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 200, 0, 0, 0, 0, 0, 0};
 	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
 

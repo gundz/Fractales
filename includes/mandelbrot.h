@@ -19,7 +19,6 @@ typedef struct	s_mandelbrot
 	double		movex;
 	double		movey;
 	double		maxiteration;
-	int			caca;
 	double		cx;
 	double		cy;
 	double		oldcx;
