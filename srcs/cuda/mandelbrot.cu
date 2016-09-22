@@ -54,7 +54,7 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 		zy2 = zy * zy;
 		zy = 2 * zx * zy + pi;
 		zx = zx2 - zy2 + pr;
-		if (zx2 + zy2 > 4)
+		if (zx2 + zy2 >= 4)
 			break ;
 		i++;
 	}
@@ -63,6 +63,35 @@ mandelbrot_kernel(t_cuda cuda, t_mandelbrot mandelbrot)
 	else
 		cuda.screen[dim_i] = (int)(i * 255 / mandelbrot.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255;
 }
+
+/*mandelbrot
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 >= 4)
+			break ;
+*/
+
+/*
+mandelbrot2
+		zy2 = zy * zy;
+		zx2 = zx * zx;
+		zx = (zx2 * zx) - 3 * zx * zy2 + pr;
+		zy = 3 * zx2 * zy - (zy2 * zy) + pi;
+		if (zx2 + zy2 >= 4)
+			break ;
+*/
+
+/*
+mandelbrot4
+		zy2 = zy * zy;
+		zx2 = zx * zx;
+		zx = (zx2 * zx2) - (6 * zx2 * zy2) + (zy2 * zy2) + pr;
+		zy = (4 * (zx2 * zx) * zy) - (4 * zx * (zy2 * zy)) + pi;
+		if (zx2 + zy2 >= 4)
+			break ;
+*/
 
 void
 mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
