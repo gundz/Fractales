@@ -48,7 +48,7 @@ void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 	if (i == mandelbrot.maxiteration)
 		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
 	else
-		esdl_put_pixel(data->surf, x, y, i * 255 / mandelbrot.caca << 24 | (i % 255)  << 16 | 255 << 8 | 255);
+		esdl_put_pixel(data->surf, x, y, (int)(i * 255 / mandelbrot.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255);
 }
 
 void					mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
@@ -66,19 +66,16 @@ void					mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
 		mandelbrot->movey += 0.0001 / mandelbrot->zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 	{
-		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
-		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
-
-		mandelbrot->zoom = mandelbrot->zoom / 1.1;
+		mandelbrot->zoom = mandelbrot->zoom / 1.05;
+		mandelbrot->cx = (mandelbrot->oldcx) + (mandelbrot->mx * 0.05) * mandelbrot->zoom;
+		mandelbrot->cy = (mandelbrot->oldcy) + (mandelbrot->my * 0.05) * mandelbrot->zoom;
 		mandelbrot->maxiteration *= 1.0025;
-		data->esdl->en.in.button[SDL_BUTTON_LEFT] = 0;
 	}
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 	{
-		mandelbrot->cx = mandelbrot->oldcx + mandelbrot->mx * mandelbrot->zoom;
-		mandelbrot->cy = mandelbrot->oldcy + mandelbrot->my * mandelbrot->zoom;
-
-		mandelbrot->zoom = mandelbrot->zoom * 1.1;
+		mandelbrot->zoom = mandelbrot->zoom * 1.05;
+		mandelbrot->cx = (mandelbrot->oldcx) + (mandelbrot->mx * 0.05) * mandelbrot->zoom;
+		mandelbrot->cy = (mandelbrot->oldcy) + (mandelbrot->my * 0.05) * mandelbrot->zoom;
 		mandelbrot->maxiteration *= 0.9975;
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
@@ -91,7 +88,7 @@ void					mandelbrot(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 200, 0, 0, 0, 0, 0, 0};
+	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 50, 0, 0, 0, 0, 0, 0};
 	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
 
