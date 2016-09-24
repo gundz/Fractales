@@ -13,14 +13,15 @@
 #include <header.h>
 #include <mandelbrot.h>
 
-int						mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
+int
+mandelbrot_color(double new_re, double new_im, int i, int max_iteration)
 {
-	double				z;
-	int					brightness;
+	double		z;
+	int			brightness;
 
 	z = sqrt(new_re * new_re + new_im * new_im);
 	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
+	return brightness;
 }
 
 void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
@@ -45,10 +46,8 @@ void					mandelbrot_kernel(t_data *data, t_mandelbrot mandelbrot, int x, int y)
 			break ;
 		i++;
 	}
-	if (i == mandelbrot.maxiteration)
-		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
-	else
-		esdl_put_pixel(data->surf, x, y, (int)(i * 255 / mandelbrot.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255);
+	int brightness = mandelbrot_color(zx2, zy2, i, 100);
+	esdl_put_pixel(data->surf, x, y, esdl_hsv_to_rgb(brightness % 256, 255, 255 * (i < mandelbrot.maxiteration)));
 }
 
 void					mandelbrot_input(t_data *data, t_mandelbrot *mandelbrot)
@@ -91,6 +90,7 @@ void					mandelbrot(t_data *data)
 	static t_mandelbrot	mandelbrot = {(2.5 / 480), 0, 0, 50, 0, 0, 0, 0, 0, 0};
 	mandelbrot.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	mandelbrot.my = data->esdl->en.in.m_y - SDL_RY / 2;
+
 
 	mandelbrot_input(data, &mandelbrot);
 	y = 0;
