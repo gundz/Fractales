@@ -100,7 +100,7 @@ burning_input(t_data *data, t_burning *burning)
 int
 burning_call(t_data *data, t_cuda *cuda)
 {
-	static t_burning burning = {(2.5 / SDL_RY), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+	static t_burning burning = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
 	burning.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	burning.my = data->esdl->en.in.m_y - SDL_RY / 2;

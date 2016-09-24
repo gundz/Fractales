@@ -48,34 +48,49 @@ void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
 	esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxiteration));
 }
 
+void
+burning_input(t_data *data, t_burning *burning)
+{
+	burning->oldcx = burning->cx;
+	burning->oldcy = burning->cy;
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		burning->movex -= 0.0001 / burning->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		burning->movex += 0.0001 / burning->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		burning->movey -= 0.0001 / burning->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		burning->movey += 0.0001 / burning->zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+	{
+		burning->zoom = burning->zoom / 1.05;
+		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
+		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
+		burning->maxiteration *= 1.0025;
+	}
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+	{
+		burning->zoom = burning->zoom * 1.05;
+		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
+		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
+		burning->maxiteration *= 0.9975;
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+		burning->maxiteration *= 1.1;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+		burning->maxiteration *= 0.9;
+}
+
 void					burning_ship(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_burning	burning = {1, 0, 0, 50};
+	static t_burning burning = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		burning.movex -= 0.01 / burning.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		burning.movex += 0.01 / burning.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		burning.movey -= 0.01 / burning.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		burning.movey += 0.01 / burning.zoom * 10;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		burning.zoom += 0.01 * burning.zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		burning.zoom -= 0.01 * burning.zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-	{
-		burning.maxiteration *= 1.1;
-		printf("Max iterations = %d\n", burning.maxiteration);
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-	{
-		burning.maxiteration *= 0.9;
-		printf("Max iterations = %d\n", burning.maxiteration);
-	}
+	burning.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	burning.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	burning_input(data, &burning);
 	y = 0;
 	while (y < SDL_RY)
 	{

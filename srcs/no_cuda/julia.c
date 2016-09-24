@@ -49,36 +49,49 @@ void				julia_kernel(t_data *data, t_julia julia, int x, int y)
 	esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxiteration));
 }
 
+void
+julia_input(t_data *data, t_julia *julia)
+{
+	julia->oldcx = julia->cx;
+	julia->oldcy = julia->cy;
+
+	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
+		julia->movex -= 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
+		julia->movex += 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
+		julia->movey -= 0.0001 / julia->zoom;
+	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
+		julia->movey += 0.0001 / julia->zoom;
+	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
+	{
+		julia->zoom = julia->zoom / 1.05;
+		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
+		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
+		julia->maxiteration *= 1.0025;
+	}
+	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
+	{
+		julia->zoom = julia->zoom * 1.05;
+		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
+		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
+		julia->maxiteration *= 0.9975;
+	}
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
+		julia->maxiteration *= 1.1;
+	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
+		julia->maxiteration *= 0.9;
+}
+
 void				julia(t_data *data)
 {
-	static t_julia	julia = {0, 0, 1, 0, 0, 50};
+	static t_julia julia = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 	int				x;
 	int				y;
 
-	julia.mx = data->esdl->en.in.m_x;
-	julia.my = data->esdl->en.in.m_y;
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		julia.movex -= 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		julia.movex += 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		julia.movey -= 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		julia.movey += 0.01 / julia.zoom * 10;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		julia.zoom += 0.01 * julia.zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		julia.zoom -= 0.01 * julia.zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-	{
-		julia.maxiteration *= 1.1;
-		printf("Max iterations = %d\n", julia.maxiteration);
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-	{
-		julia.maxiteration *= 0.9;
-		printf("Max iterations = %d\n", julia.maxiteration);
-	}
+	julia.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	julia.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	julia_input(data, &julia);
 	y = 0;
 	while (y < SDL_RY)
 	{
