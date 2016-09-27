@@ -24,6 +24,23 @@ void				quit(t_data *data)
 	SDL_FreeSurface(data->surf);
 }
 
+void				main_fractal(t_data *data)
+{
+	if (data->fractal == MANDELBROT)
+		mandelbrot(data);
+	if (data->fractal == JULIA)
+		julia(data);
+	if (data->fractal == BURNING_SHIP)
+		burning_ship(data);
+	if (data->fractal == TRICORN)
+		tricorn(data);
+	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);
+	SDL_RenderClear(data->esdl->en.ren);
+	SDL_RenderCopy(data->esdl->en.ren, data->tex, NULL, NULL);
+	SDL_RenderPresent(data->esdl->en.ren);
+	SDL_DestroyTexture(data->tex);
+}
+
 int					main(int argc, char **argv)
 {
 	t_data			data;
@@ -39,8 +56,7 @@ int					main(int argc, char **argv)
 	while (esdl.run)
 	{
 		esdl_update_events(&esdl.en.in, &esdl.run);
-		if (check_input(&data) > 0 || change_fractal(&data) > 0 \
-			|| data.fractal == JULIA)
+		if (check_input(&data) > 0 || data.fractal == JULIA)
 			main_fractal(&data);
 		esdl_fps_limit(&esdl);
 		esdl_fps_counter(&esdl);

@@ -38,6 +38,24 @@ static int			check_input_list(t_data *data, \
 	return (ret);
 }
 
+void				change_fractal(t_data *data)
+{
+	if (data->esdl->en.in.key[SDL_SCANCODE_Q] == 1)
+	{
+		data->fractal--;
+		data->esdl->en.in.key[SDL_SCANCODE_Q] = 0;
+	}
+	else if (data->esdl->en.in.key[SDL_SCANCODE_W] == 1)
+	{
+		data->fractal++;
+		data->esdl->en.in.key[SDL_SCANCODE_W] = 0;
+	}
+	if (data->fractal >= SIZE)
+		data->fractal = 0;
+	else if (data->fractal < 0)
+		data->fractal = SIZE;
+}
+
 void				take_screenshot(t_data *data)
 {
 	char			*timestamp;
@@ -68,5 +86,6 @@ int					check_input(t_data *data)
 	ret += check_input_list(data, key, button);
 	if (data->esdl->en.in.key[SDL_SCANCODE_P] == 1)
 		take_screenshot(data);
+	change_fractal(data);
 	return (ret);
 }
