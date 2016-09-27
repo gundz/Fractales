@@ -2,7 +2,6 @@
 #CONFIG
 	SRCS =			main.c \
 					main_check.c \
-					main_fractal.c \
 					input.c \
 
 	#CUDA CONFIG
