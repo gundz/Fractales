@@ -13,92 +13,86 @@
 #include <header.h>
 #include <julia.h>
 
-int					julia_color(double new_re, double new_im, int i, int max_iteration)
+void			julia_kernel(t_data *data, t_fractal fractal, int x, int y)
 {
-	double			z;
-	int				brightness;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
+	int			i;
 
-	z = sqrt(new_re * new_re + new_im * new_im);
-	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
-}
-
-void				julia_kernel(t_data *data, t_julia julia, int x, int y)
-{
-	double			pr;
-	double			pi;
-	double			new_re;
-	double			new_im;
-	double			old_re;
-	double			old_im;
-	int				i;
-
-	pr = 0.001 * julia.mx;
-	pi = 0.001 * julia.my;
-	new_re = (x - SDL_RX / 2) / (0.5 * julia.zoom * SDL_RX) + julia.movex;
-	new_im = (y - SDL_RY / 2) / (0.5 * julia.zoom * SDL_RY) + julia.movey;
+	pr = 0.002 * fractal.mx;
+	pi = 0.002 * fractal.my;
+	zx = fractal.cx + (x - SDL_RX / 2) * fractal.zoom + fractal.movex;
+	zy = fractal.cy + (y - SDL_RX / 2) * fractal.zoom + fractal.movey;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < julia.maxiteration)
+	while (i < fractal.maxiteration)
 	{
-		old_re = new_re;
-		old_im = new_im;
-		new_re = old_re * old_re - old_im * old_im + pr;
-		new_im = 2 * old_re * old_im + pi;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = 2 * zx * zy + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, julia_color(new_re, new_im, i, julia.maxiteration));
+	if (i == fractal.maxiteration)
+		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
+	else
+		esdl_put_pixel(data->surf, x, y, 0);
 }
 
-void
-julia_input(t_data *data, t_julia *julia)
+void				caca(t_data *data, t_fractal *fractal)
 {
-	julia->oldcx = julia->cx;
-	julia->oldcy = julia->cy;
+	fractal->oldcx = fractal->cx;
+	fractal->oldcy = fractal->cy;
 
 	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		julia->movex -= 0.0001 / julia->zoom;
+		fractal->movex -= 0.0001 / fractal->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		julia->movex += 0.0001 / julia->zoom;
+		fractal->movex += 0.0001 / fractal->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		julia->movey -= 0.0001 / julia->zoom;
+		fractal->movey -= 0.0001 / fractal->zoom;
 	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		julia->movey += 0.0001 / julia->zoom;
+		fractal->movey += 0.0001 / fractal->zoom;
 	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
 	{
-		julia->zoom = julia->zoom / 1.05;
-		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
-		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
-		julia->maxiteration *= 1.0025;
+		fractal->zoom = fractal->zoom / 1.05;
+		fractal->cx = (fractal->oldcx) + (fractal->mx * 0.05) * fractal->zoom;
+		fractal->cy = (fractal->oldcy) + (fractal->my * 0.05) * fractal->zoom;
+		fractal->maxiteration *= 1.0025;
 	}
 	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
 	{
-		julia->zoom = julia->zoom * 1.05;
-		julia->cx = (julia->oldcx) + (julia->mx * 0.05) * julia->zoom;
-		julia->cy = (julia->oldcy) + (julia->my * 0.05) * julia->zoom;
-		julia->maxiteration *= 0.9975;
+		fractal->zoom = fractal->zoom * 1.05;
+		fractal->cx = (fractal->oldcx) + (fractal->mx * 0.05) * fractal->zoom;
+		fractal->cy = (fractal->oldcy) + (fractal->my * 0.05) * fractal->zoom;
+		fractal->maxiteration *= 0.9975;
 	}
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-		julia->maxiteration *= 1.1;
+		fractal->maxiteration *= 1.1;
 	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-		julia->maxiteration *= 0.9;
+		fractal->maxiteration *= 0.9;
 }
 
 void				julia(t_data *data)
 {
-	static t_julia julia = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+	static t_fractal fractal = {(2.5 / 480), 0, 0, 50, 0, 0.5, 0, 0, 0, 0};
 	int				x;
 	int				y;
 
-	julia.mx = data->esdl->en.in.m_x - SDL_RX / 2;
-	julia.my = data->esdl->en.in.m_y - SDL_RY / 2;
-	julia_input(data, &julia);
+	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
+
+	caca(data, &fractal);
+
+	//fractal_input(data, &fractal);
 	y = 0;
 	while (y < SDL_RY)
 	{
 		x = 0;
 		while (x < SDL_RX)
 		{
-			julia_kernel(data, julia, x, y);
+			julia_kernel(data, fractal, x, y);
 			x++;
 		}
 		y++;

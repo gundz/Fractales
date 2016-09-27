@@ -42,18 +42,18 @@ void				change_fractal(t_data *data)
 {
 	if (data->esdl->en.in.key[SDL_SCANCODE_Q] == 1)
 	{
-		data->fractal--;
+		data->fractal_choose--;
 		data->esdl->en.in.key[SDL_SCANCODE_Q] = 0;
 	}
 	else if (data->esdl->en.in.key[SDL_SCANCODE_W] == 1)
 	{
-		data->fractal++;
+		data->fractal_choose++;
 		data->esdl->en.in.key[SDL_SCANCODE_W] = 0;
 	}
-	if (data->fractal >= SIZE)
-		data->fractal = 0;
-	else if (data->fractal < 0)
-		data->fractal = SIZE;
+	if (data->fractal_choose >= SIZE)
+		data->fractal_choose = 0;
+	else if (data->fractal_choose < 0)
+		data->fractal_choose = SIZE;
 }
 
 void				take_screenshot(t_data *data)
