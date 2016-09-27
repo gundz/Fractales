@@ -24,17 +24,15 @@ static int			check_input_list(t_data *data, \
 	i = 1;
 	while (i <= key[0])
 	{
-		if (data->esdl->en.in.key[i] == 1)
+		if (data->esdl->en.in.key[key[i]] == 1)
 			ret++;
 		i++;
 	}
 	i = 1;
 	while (i <= button[0])
 	{
-		if (data->esdl->en.in.button[i] == 1)
-		{
+		if (data->esdl->en.in.button[button[i]] == 1)
 			ret++;
-		}
 		i++;
 	}
 	return (ret);
@@ -58,12 +56,12 @@ void				take_screenshot(t_data *data)
 
 int					check_input(t_data *data)
 {
-	const int		key[] = {11, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, \
+	const int		key[] = {10, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT, \
 		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, \
 		SDL_SCANCODE_KP_PLUS, SDL_SCANCODE_KP_MINUS, \
 		SDL_SCANCODE_A, SDL_SCANCODE_S, \
 		SDL_SCANCODE_Q, SDL_SCANCODE_W};
-	const int		button[] = {3, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT};
+	const int		button[] = {2, SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT};
 	int				ret;
 
 	ret = 0;
