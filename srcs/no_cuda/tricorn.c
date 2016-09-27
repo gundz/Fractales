@@ -13,76 +13,48 @@
 #include <header.h>
 #include <tricorn.h>
 
-int						tricorn_color(double new_re, double new_im, int i, int max_iteration)
+void					tricorn_kernel(t_data *data, t_fractal fractal, int x, int y)
 {
-	double				z;
-	int					brightness;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
+	int			i;
 
-	z = sqrt(new_re * new_re + new_im * new_im);
-	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
-}
-
-void					tricorn_kernel(t_data *data, t_tricorn tricorn, int x, int y)
-{
-	double				pr;
-	double				pi;
-	double				new_re;
-	double				new_im;
-	double				old_re;
-	double				old_im;
-	int					i;
-
-	pr = (x - SDL_RX / 2) / (0.5 * tricorn.zoom * SDL_RX) + tricorn.movex;
-	pi = (y - SDL_RY / 2) / (0.5 * tricorn.zoom * SDL_RY) + tricorn.movey;
-	new_re = new_im = old_re = old_im = 0;
+	pr = fractal.cx + (x - SDL_RX / 2) * fractal.zoom + fractal.movex;
+	pi = fractal.cy + (y - SDL_RY / 2) * fractal.zoom + fractal.movey;
+	zx = 0;
+	zy = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < tricorn.maxiteration)
+	while (i < fractal.maxiteration)
 	{
-		old_re = new_re;
-		old_im = new_im;
-		new_re = old_re * old_re - old_im * old_im + pr;
-		new_im = -(2 * old_re * old_im + pi);
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = -(2 * zx * zy) + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, tricorn_color(new_re, new_im, i, tricorn.maxiteration));
+	int brightness = color_it(zx2, zy2, i, 100);
+	esdl_put_pixel(data->surf, x, y, esdl_hsv_to_rgb(brightness % 256, 255, 255 * (i < fractal.maxiteration)));
 }
 
 void					tricorn(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_tricorn	tricorn = {1, -0.5, 0, 100};
+	static t_fractal	fractal = {(2.5 / 480), 0, 0, 50, 0, 0, 0, 0, 0, 0};
 
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		tricorn.movex -= 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		tricorn.movex += 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		tricorn.movey -= 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		tricorn.movey += 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		tricorn.zoom += 0.01 * tricorn.zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		tricorn.zoom -= 0.01 * tricorn.zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-	{
-		tricorn.maxiteration *= 1.1;
-		printf("Max iterations = %d\n", tricorn.maxiteration);
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-	{
-		tricorn.maxiteration *= 0.9;
-		printf("Max iterations = %d\n", tricorn.maxiteration);
-	}
+	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	fractal_input(data, &fractal);
 	y = 0;
 	while (y < SDL_RY)
 	{
 		x = 0;
 		while (x < SDL_RX)
 		{
-			tricorn_kernel(data, tricorn, x, y);
+			tricorn_kernel(data, fractal, x, y);
 			x++;
 		}
 		y++;

@@ -13,91 +13,50 @@
 #include <header.h>
 #include <burning_ship.h>
 
-int						burning_ship_color(double new_re, double new_im, int i, int max_iteration)
+void					burning_ship_kernel(t_data *data, t_fractal fractal, int x, int y)
 {
-	double				z;
-	int					brightness;
-
-	z = sqrt(new_re * new_re + new_im * new_im);
-	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | (i % 255) << 16 | 255 << 8 | 255);
-}
-
-void					burning_ship_kernel(t_data *data, t_burning burning, int x, int y)
-{
-	double				pr;
-	double				pi;
-	double				new_re;
-	double				new_im;
-	double				old_re;
-	double				old_im;
+	double				pr, pi;
+	double				zx, zy;
+	double				zx2, zy2;
 	int					i;
 
-	pr = (x - SDL_RX / 2) / (0.5 * burning.zoom * SDL_RX) + burning.movex;
-	pi = (y - SDL_RY / 2) / (0.5 * burning.zoom * SDL_RY) + burning.movey;
-	new_re = new_im = old_re = old_im = 0;
+	pr = fractal.cx + (x - SDL_RX / 2) * fractal.zoom + fractal.movex;
+	pi = fractal.cy + (y - SDL_RY / 2) * fractal.zoom + fractal.movey;
+	zx = 0;
+	zy = 0;
 	i = 0;
-	while (((new_re * new_re + new_im * new_im) < 4) && i < burning.maxiteration)
+	while (i < fractal.maxiteration)
 	{
-		new_re = (old_re * old_re - old_im * old_im) + pr;
-		new_im = (fabs(old_re * old_im) * 2) + pi;
-		old_re = new_re;
-		old_im = new_im;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = fabs(2 * zx * zy) + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 > 4)
+			break ;
 		i++;
 	}
-	esdl_put_pixel(data->surf, x, y, burning_ship_color(new_re, new_im, i, burning.maxiteration));
-}
-
-void
-burning_input(t_data *data, t_burning *burning)
-{
-	burning->oldcx = burning->cx;
-	burning->oldcy = burning->cy;
-
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		burning->movex -= 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		burning->movex += 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		burning->movey -= 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		burning->movey += 0.0001 / burning->zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-	{
-		burning->zoom = burning->zoom / 1.05;
-		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
-		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
-		burning->maxiteration *= 1.0025;
-	}
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-	{
-		burning->zoom = burning->zoom * 1.05;
-		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
-		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
-		burning->maxiteration *= 0.9975;
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-		burning->maxiteration *= 1.1;
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-		burning->maxiteration *= 0.9;
+	if (i == fractal.maxiteration)
+		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
+	else
+		esdl_put_pixel(data->surf, x, y, (int)(i * 255 / 400) << 24 | (i % 255)  << 16 | 0 << 8 | 255);
 }
 
 void					burning_ship(t_data *data)
 {
 	int					x;
 	int					y;
-	static t_burning burning = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+	static t_fractal	fractal = {(2.5 / 480), 0, 0, 50, 0, 0, 0, 0, 0, 0};
 
-	burning.mx = data->esdl->en.in.m_x - SDL_RX / 2;
-	burning.my = data->esdl->en.in.m_y - SDL_RY / 2;
-	burning_input(data, &burning);
+	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	fractal_input(data, &fractal);
 	y = 0;
 	while (y < SDL_RY)
 	{
 		x = 0;
 		while (x < SDL_RX)
 		{
-			burning_ship_kernel(data, burning, x, y);
+			burning_ship_kernel(data, fractal, x, y);
 			x++;
 		}
 		y++;
