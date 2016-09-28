@@ -1,29 +1,9 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cuda.cu                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fgundlac <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/16 15:29:40 by fgundlac          #+#    #+#             */
-/*   Updated: 2016/09/16 15:29:41 by fgundlac         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-extern "C"
-{
-#include <header.h>
-}
 #include <cuda.h>
 
-//SOME CHECK TO DO MALLOC ETC...
-
-void
-do_cuda(t_data *data, int (*f)(t_data *, t_cuda *))
+void			do_cuda(t_data *data, int (*f)(t_data *, t_cuda *))
 {
-	static t_cuda cuda = {NULL};
-
-	size_t size = SDL_RY * SDL_RX * data->surf->format->BytesPerPixel;
+	static t_cuda	cuda = {NULL};
+	const size_t	size = SDL_RY * SDL_RX * data->surf->format->BytesPerPixel;
 
 	if (cuda.screen == NULL)
 	{

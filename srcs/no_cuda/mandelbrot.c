@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <header.h>
-#include <mandelbrot.h>
 
 void					mandelbrot_kernel(t_data *data, t_fractal fractal, int x, int y)
 {

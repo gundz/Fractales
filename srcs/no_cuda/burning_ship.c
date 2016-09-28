@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <header.h>
-#include <burning_ship.h>
 
 void					burning_ship_kernel(t_data *data, t_fractal fractal, int x, int y)
 {

@@ -15,21 +15,9 @@ extern "C"
 #include <header.h>
 }
 #include <cuda.h>
-#include <burning_ship.h>
-
-__device__ int
-burning_ship_color(double new_re, double new_im, int i, int max_iteration)
-{
-	double		z;
-	int			brightness;
-
-	z = sqrt(new_re * new_re + new_im * new_im);
-	brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2((double)(max_iteration));
-	return (brightness << 24 | brightness << 16 | brightness << 8 | 255);
-}
 
 __global__ void
-burning_kernel(t_cuda cuda, t_burning burning)
+burning_kernel(t_cuda cuda, t_fractal fractal)
 {
 	const int x = blockIdx.x * blockDim.x + threadIdx.x;
 	const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -42,12 +30,12 @@ burning_kernel(t_cuda cuda, t_burning burning)
 	double		zx2, zy2;
 	int			i;
 
-	pr = burning.cx + (x - cuda.rx / 2) * burning.zoom + burning.movex;
-	pi = burning.cy + (y - cuda.ry / 2) * burning.zoom + burning.movey;
+	pr = fractal.cx + (x - cuda.rx / 2) * fractal.zoom + fractal.movex;
+	pi = fractal.cy + (y - cuda.ry / 2) * fractal.zoom + fractal.movey;
 	zx = 0;
 	zy = 0;
 	i = 0;
-	while (i < burning.maxiteration)
+	while (i < fractal.maxiteration)
 	{
 		zx2 = zx * zx;
 		zy2 = zy * zy;
@@ -57,55 +45,21 @@ burning_kernel(t_cuda cuda, t_burning burning)
 			break ;
 		i++;
 	}
-	if (i == burning.maxiteration)
+	if (i == fractal.maxiteration)
 		cuda.screen[dim_i] = 0xFFFFFFFF;
 	else
-		cuda.screen[dim_i] = (int)(i * 255 / burning.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255;
-}
-
-void
-burning_input(t_data *data, t_burning *burning)
-{
-	burning->oldcx = burning->cx;
-	burning->oldcy = burning->cy;
-
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		burning->movex -= 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		burning->movex += 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		burning->movey -= 0.0001 / burning->zoom;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		burning->movey += 0.0001 / burning->zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-	{
-		burning->zoom = burning->zoom / 1.05;
-		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
-		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
-		burning->maxiteration *= 1.0025;
-	}
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-	{
-		burning->zoom = burning->zoom * 1.05;
-		burning->cx = (burning->oldcx) + (burning->mx * 0.05) * burning->zoom;
-		burning->cy = (burning->oldcy) + (burning->my * 0.05) * burning->zoom;
-		burning->maxiteration *= 0.9975;
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-		burning->maxiteration *= 1.1;
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-		burning->maxiteration *= 0.9;
+		cuda.screen[dim_i] = (int)(i * 255 / fractal.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255;
 }
 
 int
 burning_call(t_data *data, t_cuda *cuda)
 {
-	static t_burning burning = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
+	static t_fractal fractal = {(2.5 / 480), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
-	burning.mx = data->esdl->en.in.m_x - SDL_RX / 2;
-	burning.my = data->esdl->en.in.m_y - SDL_RY / 2;
-	burning_input(data, &burning);
-	burning_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, burning);
+	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	fractal_input(data, &fractal);
+	burning_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, fractal);
 	return (0);
 }
 

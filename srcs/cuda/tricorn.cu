@@ -15,76 +15,50 @@ extern "C"
 #include <header.h>
 }
 #include <cuda.h>
-#include <tricorn.h>
+#include "tools.cu"
 
 __global__ void
-tricorn_kernel(t_cuda cuda, t_tricorn tricorn)
+tricorn_kernel(t_cuda cuda, t_fractal fractal)
 {
-	int x = blockIdx.x * blockDim.x + threadIdx.x;
-	int y = blockIdx.y * blockDim.y + threadIdx.y;
-	int dim_i = y * cuda.rx + x;
+	const int x = blockIdx.x * blockDim.x + threadIdx.x;
+	const int y = blockIdx.y * blockDim.y + threadIdx.y;
+	const int dim_i = y * cuda.rx + x;
 	if ((x >= cuda.rx) || (y >= cuda.ry))
 		return ;
 
-    double pr, pi;
-    double newRe, newIm, oldRe, oldIm;
+	double		pr, pi;
+	double		zx, zy;
+	double		zx2, zy2;
+	int			i;
 
-	pr = (x - cuda.rx / 2) / (0.5 * tricorn.zoom * cuda.rx) + tricorn.movex;
-	pi = (y - cuda.ry / 2) / (0.5 * tricorn.zoom * cuda.ry) + tricorn.movey;
-	newRe = newIm = oldRe = oldIm = 0;
-
-	int i = 0;
-	while (((newRe * newRe + newIm * newIm) < 4) && i < tricorn.maxiteration)
+	pr = fractal.cx + (x - cuda.rx / 2) * fractal.zoom + fractal.movex;
+	pi = fractal.cy + (y - cuda.ry / 2) * fractal.zoom + fractal.movey;
+	zx = 0;
+	zy = 0;
+	i = 0;
+	while (i < fractal.maxiteration)
 	{
-	    oldRe = newRe;
-	    oldIm = newIm;
-	    newRe = oldRe * oldRe - oldIm * oldIm + pr;
-	    newIm = -(2 * oldRe * oldIm + pi);
-	    i++;
+		zx2 = zx * zx;
+		zy2 = zy * zy;
+		zy = -(2 * zx * zy) + pi;
+		zx = zx2 - zy2 + pr;
+		if (zx2 + zy2 >= 4)
+			break ;
+		i++;
 	}
-
-    if(i == tricorn.maxiteration)
-        cuda.screen[dim_i] = 0x00000000;
-    else
-    {
-        double z = sqrt(newRe * newRe + newIm * newIm);
-        int brightness = 256. * log2(1.75 + i - log2(log2(z))) / log2(double(tricorn.maxiteration));
-        cuda.screen[dim_i] = brightness << 24 | (i % 255) << 16 | 255 << 8 | 255;
-    }
+	int brightness = cuda_color_it(zx2, zy2, i, 100);
+	cuda.screen[dim_i] = hsv_to_rgb(brightness % 256, 255, 255 * (i < fractal.maxiteration));
 }
 
 int
 tricorn_call(t_data *data, t_cuda *cuda)
 {
-	static t_tricorn	tricorn = {1, -0.5, 0, 200};
+	static t_fractal fractal = {(2.5 / SDL_RY), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
-	if (data->esdl->en.in.key[SDL_SCANCODE_LEFT] == 1)
-		tricorn.movex -= 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_RIGHT] == 1)
-		tricorn.movex += 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_UP] == 1)
-		tricorn.movey -= 0.01 / tricorn.zoom * 10;
-	if (data->esdl->en.in.key[SDL_SCANCODE_DOWN] == 1)
-		tricorn.movey += 0.01 / tricorn.zoom * 10;
-
-	if (data->esdl->en.in.button[SDL_BUTTON_LEFT] == 1)
-		tricorn.zoom += 0.01 * tricorn.zoom;
-	if (data->esdl->en.in.button[SDL_BUTTON_RIGHT] == 1)
-		tricorn.zoom -= 0.01 * tricorn.zoom;
-
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_PLUS] == 1)
-	{
-		tricorn.maxiteration *= 1.1;
-		printf("Max iterations = %d\n", tricorn.maxiteration);
-	}
-	if (data->esdl->en.in.key[SDL_SCANCODE_KP_MINUS] == 1)
-	{
-		tricorn.maxiteration *= 0.9;
-		printf("Max iterations = %d\n", tricorn.maxiteration);
-	}
-
-
-	tricorn_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, tricorn);
+	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
+	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
+	fractal_input(data, &fractal);
+	tricorn_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, fractal);
 	return (0);
 }
 
