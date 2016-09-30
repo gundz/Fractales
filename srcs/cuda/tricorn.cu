@@ -36,7 +36,7 @@ tricorn_kernel(t_cuda cuda, t_fractal fractal)
 	zx = 0;
 	zy = 0;
 	i = 0;
-	while (i < fractal.maxiteration)
+	while (++i < fractal.maxiteration)
 	{
 		zx2 = zx * zx;
 		zy2 = zy * zy;
@@ -44,7 +44,6 @@ tricorn_kernel(t_cuda cuda, t_fractal fractal)
 		zx = zx2 - zy2 + pr;
 		if (zx2 + zy2 >= 4)
 			break ;
-		i++;
 	}
 	int brightness = cuda_color_it(zx2, zy2, i, 100);
 	cuda.screen[dim_i] = hsv_to_rgb(brightness % 256, 255, 255 * (i < fractal.maxiteration));

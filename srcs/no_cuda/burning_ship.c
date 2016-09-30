@@ -24,7 +24,7 @@ void					burning_ship_kernel(t_data *data, t_fractal fractal, int x, int y)
 	zx = 0;
 	zy = 0;
 	i = 0;
-	while (i < fractal.maxiteration)
+	while (++i < fractal.maxiteration)
 	{
 		zx2 = zx * zx;
 		zy2 = zy * zy;
@@ -32,7 +32,6 @@ void					burning_ship_kernel(t_data *data, t_fractal fractal, int x, int y)
 		zx = zx2 - zy2 + pr;
 		if (zx2 + zy2 > 4)
 			break ;
-		i++;
 	}
 	if (i == fractal.maxiteration)
 		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);

@@ -35,7 +35,7 @@ julia_kernel(t_cuda cuda, t_fractal fractal)
 	zx = fractal.cx + (x - cuda.rx / 2) * fractal.zoom + fractal.movex;
 	zy = fractal.cy + (y - cuda.ry / 2) * fractal.zoom + fractal.movey;
 	i = 0;
-	while (i < fractal.maxiteration)
+	while (++i < fractal.maxiteration)
 	{
 		zx2 = zx * zx;
 		zy2 = zy * zy;
@@ -43,7 +43,6 @@ julia_kernel(t_cuda cuda, t_fractal fractal)
 		zx = zx2 - zy2 + pr;
 		if (zx2 + zy2 > 4)
 			break ;
-		i++;
 	}
 	if (i == fractal.maxiteration)
 		cuda.screen[dim_i] = 0xFFFFFFFF;

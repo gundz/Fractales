@@ -24,7 +24,7 @@ void					mandelbrot_kernel(t_data *data, t_fractal fractal, int x, int y)
 	zx = 0;
 	zy = 0;
 	i = 0;
-	while (i < fractal.maxiteration)
+	while (++i < fractal.maxiteration)
 	{
 		zx2 = zx * zx;
 		zy2 = zy * zy;
@@ -32,7 +32,6 @@ void					mandelbrot_kernel(t_data *data, t_fractal fractal, int x, int y)
 		zx = zx2 - zy2 + pr;
 		if (zx2 + zy2 > 4)
 			break ;
-		i++;
 	}
 	int brightness = color_it(zx2, zy2, i, 100);
 	esdl_put_pixel(data->surf, x, y, esdl_hsv_to_rgb(brightness % 256, 255, 255 * (i < fractal.maxiteration)));
