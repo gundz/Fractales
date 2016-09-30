@@ -32,6 +32,10 @@ void				main_fractal(t_data *data)
 		julia(data);
 	if (data->fractal_choose == BURNING_SHIP)
 		burning_ship(data);
+	if (data->fractal_choose == MANDELBROT3)
+		mandelbrot3(data);
+	if (data->fractal_choose == MANDELBROT4)
+		mandelbrot4(data);
 	if (data->fractal_choose == TRICORN)
 		tricorn(data);
 	data->tex = SDL_CreateTextureFromSurface(data->esdl->en.ren, data->surf);

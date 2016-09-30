@@ -18,7 +18,7 @@ extern "C"
 #include "tools.cu"
 
 __global__ void
-mandelbrot_kernel(t_cuda cuda, t_fractal fractal)
+mandelbrot3_kernel(t_cuda cuda, t_fractal fractal)
 {
 	const int x = blockIdx.x * blockDim.x + threadIdx.x;
 	const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -38,10 +38,10 @@ mandelbrot_kernel(t_cuda cuda, t_fractal fractal)
 	i = 0;
 	while (++i < fractal.maxiteration)
 	{
-		zx2 = zx * zx;
 		zy2 = zy * zy;
-		zy = 2 * zx * zy + pi;
-		zx = zx2 - zy2 + pr;
+		zx2 = zx * zx;
+		zx = (zx2 * zx) - 3 * zx * zy2 + pr;
+		zy = 3 * zx2 * zy - (zy2 * zy) + pi;
 		if (zx2 + zy2 >= 4)
 			break ;
 	}
@@ -50,19 +50,19 @@ mandelbrot_kernel(t_cuda cuda, t_fractal fractal)
 }
 
 int
-mandelbrot_call(t_data *data, t_cuda *cuda)
+mandelbrot3_call(t_data *data, t_cuda *cuda)
 {
 	static t_fractal fractal = {(2.5 / SDL_RY), 0, 0, 400, 0, 0, 0, 0, 0, 0};
 
 	fractal.mx = data->esdl->en.in.m_x - SDL_RX / 2;
 	fractal.my = data->esdl->en.in.m_y - SDL_RY / 2;
 	fractal_input(data, &fractal);
-	mandelbrot_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, fractal);
+	mandelbrot3_kernel<<<cuda->gridsize, cuda->blocksize>>>(*cuda, fractal);
 	return (0);
 }
 
 void
-mandelbrot(t_data *data)
+mandelbrot3(t_data *data)
 {
-	do_cuda(data, &mandelbrot_call);
+	do_cuda(data, &mandelbrot3_call);
 }

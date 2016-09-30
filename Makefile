@@ -9,11 +9,15 @@
 	SRCS_NO_CUDA =	mandelbrot.c \
 					julia.c \
 					burning_ship.c \
+					mandelbrot3.c \
+					mandelbrot4.c \
 					tricorn.c \
 
 	SRCS_CUDA =		cuda.cu \
 					mandelbrot.cu \
 					julia.cu \
+					mandelbrot3.cu \
+					mandelbrot4.cu \
 					burning_ship.cu \
 					tricorn.cu \
 

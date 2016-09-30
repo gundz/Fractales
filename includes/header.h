@@ -25,7 +25,8 @@ typedef struct			s_data
 
 typedef enum			e_fractal_choose
 {
-	MANDELBROT, JULIA, BURNING_SHIP, TRICORN, SIZE = 4
+	MANDELBROT, JULIA, BURNING_SHIP, MANDELBROT3, MANDELBROT4, TRICORN,\
+	SIZE = 6
 }						t_fractal_choose;
 
 typedef struct			s_fractal
@@ -48,6 +49,8 @@ void					main_fractal(t_data *data);
 void					mandelbrot(t_data *data);
 void					julia(t_data *data);
 void					burning_ship(t_data *data);
+void					mandelbrot3(t_data *data);
+void					mandelbrot4(t_data *data);
 void					tricorn(t_data *data);
 
 void					fractal_input(t_data *data, t_fractal *fractal);
