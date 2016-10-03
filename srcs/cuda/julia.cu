@@ -15,6 +15,7 @@ extern "C"
 #include <header.h>
 }
 #include <cuda.h>
+#include "tools.cu"
 
 __global__ void
 julia_kernel(t_cuda cuda, t_fractal fractal)
@@ -44,10 +45,8 @@ julia_kernel(t_cuda cuda, t_fractal fractal)
 		if (zx2 + zy2 > 4)
 			break ;
 	}
-	if (i == fractal.maxiteration)
-		cuda.screen[dim_i] = 0xFFFFFFFF;
-	else
-		cuda.screen[dim_i] = (int)(i * 255 / fractal.maxiteration) << 24 | (i % 255)  << 16 | 255 << 8 | 255;
+	int brightness = cuda_color_it(zx2, zy2, i, 100);
+	cuda.screen[dim_i] = (brightness % 256) << 24 | i % 255 << 16 | 0 << 8 | (255 * (i < fractal.maxiteration));
 }
 
 int

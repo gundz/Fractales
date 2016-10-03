@@ -33,10 +33,8 @@ void					julia_kernel(t_data *data, t_fractal fractal, int x, int y)
 		if (zx2 + zy2 > 4)
 			break ;
 	}
-	if (i == fractal.maxiteration)
-		esdl_put_pixel(data->surf, x, y, 0xFFFFFFFF);
-	else
-		esdl_put_pixel(data->surf, x, y, (int)(i * 255 / 400) << 24 | (i % 255)  << 16 | 255 << 8 | 255);
+	int brightness = color_it(zx2, zy2, i, 100);
+	esdl_put_pixel(data->surf, x, y, (brightness % 256) << 24 | i % 255 << 16 | 0 << 8 | (255 * (i < fractal.maxiteration)));
 }
 
 void					julia(t_data *data)
